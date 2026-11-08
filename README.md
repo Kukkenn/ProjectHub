@@ -17,7 +17,7 @@ ProjectHub connects your scattered code repositories, local paths, dev commands,
 
 <p align="center">
   <a href="#-project-showcase">
-    <img src="docs/screenshots/library.png" alt="ProjectHub Dashboard Preview" width="850">
+    <img src="docs/screenshots/libary.png" alt="ProjectHub Dashboard Preview" width="850">
   </a>
 </p>
 
@@ -123,7 +123,7 @@ projecthub/
 
 ### Main Dashboard & File Explorer
 <p align="center">
-  <img src="docs/screenshots/library.png" alt="Library View" width="800">
+  <img src="docs/screenshots/libary.png" alt="Library View" width="800">
   <br>
   <em>Main dashboard showing active project workspace, quick filters, and status tags.</em>
 </p>
