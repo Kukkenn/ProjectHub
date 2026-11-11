@@ -141,16 +141,6 @@ projecthub/
 
 ---
 
-## <img src="https://cdn.simpleicons.org/github/FFB65C" width="20" align="center"> &nbsp;Star History
-
-<div align="center">
-
-[![Star History Chart](https://api.star-history.com/svg?repos=Kukkenn/projecthub&type=Date)](https://star-history.com/#Kukkenn/projecthub&Date)
-
-</div>
-
----
-
 ## <img src="https://cdn.simpleicons.org/blueprint/FFB65C" width="20" align="center"> &nbsp;License
 
 MIT © [Bartosz Grześkowiak (Kuke)](https://github.com/Kukkenn)
