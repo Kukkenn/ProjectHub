@@ -29,6 +29,12 @@ desktop/src-tauri/resources/
 *.pem
 *.key
 
+# Application data (database, sessions, secret key) — never commit
+data/
+*.db
+*.db-wal
+*.db-shm
+
 # OS / temp
 Thumbs.db
 .DS_Store

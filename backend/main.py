@@ -787,8 +787,10 @@ async def upload_zip(request: Request, pid: str):
     if info and form.get("restore") == "1":
         try:
             meta = json.loads(info.decode("utf-8"))
+            # Nie przywracaj poleceń uruchamiania z obcego archiwum: zapisany
+            # backup mógł pochodzić od innej osoby, a „Uruchom” wykonuje kod.
             keep = {k: meta[k] for k in ("description", "notes", "category", "tags", "tech", "status", "tasks", "docs",
-                                          "commands", "icon", "color") if k in meta}
+                                          "icon", "color") if k in meta}
             if not config.FEATURES["run"]:
                 keep.pop("commands", None)
             fields = encode(clean_project(keep, partial=True, require_path=False))
@@ -1077,8 +1079,8 @@ async def import_data(request: Request):
                 f["path"] = fsutil.normalize_project_path(f["path"])
             else:
                 f["path"] = ""
-            if not config.FEATURES["run"]:
-                f.pop("commands", None)
+            # Polecenia z importu (obcego pliku) nie wchodzą do nowego projektu.
+            f.pop("commands", None)
             f["storage"] = storage
             f = encode(f)
             rid = raw.get("id") if isinstance(raw.get("id"), str) else ""

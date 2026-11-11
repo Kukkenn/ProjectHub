@@ -26,7 +26,7 @@ ProjectHub connects your scattered code repositories, local paths, dev commands,
 ---
 
 > [!NOTE]
-> **Local-First & Private:** ProjectHub runs locally on `127.0.0.1`. Your code, database records, and session history remain strictly on your machine and never hit external clouds.
+> **Local-First & Private:** ProjectHub runs locally on `127.0.0.1`. Your code, database records, and session history never leave your machine. (The UI loads its font from Google Fonts; no user data is sent there.)
 
 ---
 
@@ -56,7 +56,7 @@ ProjectHub bridges the gap between raw file explorers and heavy IDE workspace co
 * **Command Automation:** Save per-project execution scripts (e.g. `npm run dev`, `python main.py`, `pytest`) and execute them with direct output isolation.
 * **Token-Authenticated Web Previews:** Test frontend HTML/CSS/JS builds in an isolated sandbox environment protected with strict Content Security Policy (`CSP`) headers.
 * **Directory Tech Scanner:** Scan system directories to automatically recognize project stacks (Python, Node.js, Rust, Go, Docker, C#) and batch-import project structures.
-* **Security Hardening:** Built-in defenses against Zip-Slip exploits, path traversal attacks, rate-throttled login attempts (PBKDF2), and CSRF validation.
+* **Security Hardening:** Built-in defenses against Zip-Slip exploits, path traversal attacks, rate-throttled login attempts (scrypt), and CSRF validation.
 
 ---
 
