@@ -1,0 +1,31 @@
+# Uruchomienie: docker compose up -d   (potem http://localhost:8765)
+# Z własną domeną i HTTPS: docker compose --profile https up -d  (uzupełnij Caddyfile)
+services:
+  projecthub:
+    build: .
+    restart: unless-stopped
+    environment:
+      PROJECTHUB_MODE: hosted
+      PROJECTHUB_REGISTRATION: open        # closed = konta tworzysz sam: docker compose exec projecthub python manage.py create-user nazwa
+      PROJECTHUB_QUOTA_MB: 500             # miejsce na plików na konto, 0 = bez limitu
+      # PROJECTHUB_ALLOWED_HOSTS: projekty.twojadomena.pl
+      # PROJECTHUB_TRUST_PROXY: "1"        # włącz razem z profilem https
+      # PROJECTHUB_HTTPS: "1"
+    ports:
+      - "8765:8765"
+    volumes:
+      - projecthub-data:/data
+
+  caddy:
+    profiles: ["https"]
+    image: caddy:2
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+    depends_on: [projecthub]
+
+volumes:
+  projecthub-data:
+  caddy-data:

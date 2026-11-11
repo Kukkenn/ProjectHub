@@ -1,0 +1,6 @@
+data
+**/__pycache__
+**/*.pyc
+desktop
+.git
+*.zip

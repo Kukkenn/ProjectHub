@@ -1,0 +1,8 @@
+# Zamień na swoją domenę (rekord DNS musi wskazywać na serwer). Certyfikat HTTPS Caddy załatwia sam.
+projekty.twojadomena.pl {
+	encode gzip
+	request_body {
+		max_size 250MB
+	}
+	reverse_proxy projecthub:8765
+}

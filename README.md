@@ -17,7 +17,7 @@ ProjectHub connects your scattered code repositories, local paths, dev commands,
 
 <p align="center">
   <a href="#-project-showcase">
-    <img src="docs/screenshots/libary.png" alt="ProjectHub Dashboard Preview" width="850">
+    <img src="docs/screenshots/hero.png" alt="ProjectHub — Local-first · Self-hosted · Open source" width="850">
   </a>
 </p>
 
@@ -69,20 +69,20 @@ ProjectHub bridges the gap between raw file explorers and heavy IDE workspace co
 
 1. Download the latest `.exe` release package.
 2. Launch `start.bat` or run `projecthub.exe`.
-3. Open `http://127.0.0.1:8000` in your web browser.
+3. Open `http://127.0.0.1:8765` in your web browser.
 
 ### Option 2: Run From Source
 
 ```bash
 # Clone repository
-git clone [https://github.com/Kukkenn/projecthub.git](https://github.com/Kukkenn/projecthub.git)
+git clone https://github.com/Kukkenn/projecthub.git
 cd projecthub
 
 # Install required backend dependencies
-pip install -r requirements.txt
+pip install -r backend/requirements.txt
 
 # Start local FastAPI server
-python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
+python -m uvicorn backend.main:app --host 127.0.0.1 --port 8765
 ```
 
 ---
@@ -100,45 +100,44 @@ projecthub/
 │   ├── guide.py        # Default guide project templates & pages
 │   ├── main.py         # App entry point, FastAPI routing & security guards
 │   ├── manage.py       # Database management & CLI admin routines
+│   ├── requirements.txt
 │   ├── run.py          # Standalone launcher script
 │   ├── security.py     # Throttling, hashing & CSRF token generation
 │   └── validate.py     # Input sanitation & schema validation
 ├── desktop/            # Desktop wrapper and packaging files
 ├── static/             # Frontend Single Page Application (SPA)
+│   ├── index.html      # Main workspace dashboard layout
+│   ├── login.html      # Authentication portal
 │   ├── css/            # Modular stylesheets (project, style, themes, views)
 │   └── js/             # SPA client modules (app, api, md, lib, upload, views...)
-├── index.html          # Main workspace dashboard layout
-├── login.html          # Authentication portal
+├── docs/               # Screenshots used in this README
 ├── Dockerfile          # Containerized deployment setup
 ├── docker-compose.yml  # Docker multi-container orchestration
 ├── Caddyfile           # Reverse proxy configuration
 ├── start.bat           # Windows 1-click execution script
-├── start.sh            # Linux/macOS 1-click execution script
-└── requirements.txt    # Python runtime dependencies
+└── start.sh            # Linux/macOS 1-click execution script
 ```
 
 ---
 
 ## <img src="https://cdn.simpleicons.org/googlechrome/FFB65C" width="20" align="center"> &nbsp;Project Showcase
 
-### Main Dashboard & File Explorer
+### Every project. One place.
 <p align="center">
-  <img src="docs/screenshots/libary.png" alt="Library View" width="800">
+  <img src="docs/screenshots/projects.png" alt="Every project. One place." width="800">
   <br>
-  <em>Main dashboard showing active project workspace, quick filters, and status tags.</em>
+  <em>Main dashboard with favorites, tags &amp; filters, and category pills.</em>
 </p>
 
-### Module Breakdowns
-
-| Embedded File Manager & Editor | Isolated Web Sandbox Preview |
+| Edit Files in the Browser | Docs in Markdown |
 | :---: | :---: |
-| <img src="docs/screenshots/files.png" alt="Files view" width="400"> | <img src="docs/screenshots/preview.png" alt="Preview view" width="400"> |
-| *Integrated directory listing, Markdown viewer, and file editor.* | *Token-authenticated live HTML sandbox with CSP protection.* |
+| <img src="docs/screenshots/edit-files.png" alt="Edit files in the browser" width="400"> | <img src="docs/screenshots/docs.png" alt="Docs in Markdown" width="400"> |
+| *Built-in directory tree, text editor, upload and ZIP handlers.* | *Multi-page per-project documentation written in Markdown.* |
 
-| Task Tracker & Workspace Docs | Backup & Archive Manager |
+| Themes for Every Mood | Documentation Pages |
 | :---: | :---: |
-| <img src="docs/screenshots/tasks.png" alt="Tasks view" width="400"> | <img src="docs/screenshots/backup.png" alt="Backup view" width="400"> |
-| *Embedded task checklists and multi-page documentation.* | *Automated ZIP exports and background system archives.* |
+| <img src="docs/screenshots/themes.png" alt="Themes for every mood" width="400"> | <img src="docs/screenshots/docs-view.png" alt="Documentation page view" width="400"> |
+| *Night, Ocean and Light themes across the whole app.* | *Getting-started pages with code blocks and callouts.* |
 
 ---
 
