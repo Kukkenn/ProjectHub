@@ -65,7 +65,7 @@ ProjectHub bridges the gap between raw file explorers and heavy IDE workspace co
 
 [![ProjectHub trailer](docs/screenshots/hero.png)](docs/screenshots/projecthub-trailer.mp4)
 
-**▶ [Watch the ProjectHub trailer (MP4, ~15 MB)](docs/screenshots/projecthub-trailer.mp4)**
+**▶ [Watch the ProjectHub trailer (MP4, ~15 MB)](docs/screenshots/projecthub-trailer.mp4)** — GitHub can't preview big MP4 files inline; open the link and press **Raw** (top right) to download and play it, or grab it from the [Releases](https://github.com/Kukkenn/ProjectHub/releases) page, where the video plays right in the release notes.
 
 ---
 
