@@ -17,7 +17,7 @@ ProjectHub connects your scattered code repositories, local paths, dev commands,
 
 <p align="center">
   <a href="#-project-showcase">
-    <img src="docs/screenshots/projecthub-trailer.mp4" alt="ProjectHub — Local-first · Self-hosted · Open source" width="850">
+    <img src="docs/screenshots/hero.png" alt="ProjectHub — Local-first · Self-hosted · Open source" width="850">
   </a>
 </p>
 
