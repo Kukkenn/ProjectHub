@@ -1,52 +1,52 @@
-/* api.js: jedyne miejsce, w którym front rozmawia z backendem.
+/* api.js: the only place where the front talks to the backend.
 
-   Dwa tryby:
-   - serwer: zwykłe zapytania fetch do FastAPI (adresy poniżej),
-   - podgląd (demo): działa po otwarciu index.html prosto z dysku albo z ?demo w adresie.
-     Dane trafiają wtedy do localStorage, a uruchamianie, Eksplorator, backup i pliki tylko udają.
+   Two modes:
+   - server: regular fetch calls to FastAPI (addresses below),
+   - preview (demo): works when index.html is opened straight from disk or with ?demo in the URL.
+     Data then goes to localStorage, and running, Explorer, backup and files only pretend to work.
 
-   Umowa z backendem (wszystko pod /api, JSON, ciasteczko sesji, nagłówek X-CSRF-Token przy zapisie):
+   Contract with the backend (everything under /api, JSON, session cookie, X-CSRF-Token header on writes):
 
-   Konto
+   Account
      GET    /api/auth/status             -> { configured, authenticated, username, mode: "local"|"hosted",
                                                   registration: "open"|"closed", features: {run, scan, localPaths,
                                                   openFolder, backupToPath, upload, preview}, limits, usage }
-     POST   /api/auth/register           { username, password }  zakłada konto i loguje (alias: /api/auth/setup)
+     POST   /api/auth/register           { username, password }  creates an account and logs in (alias: /api/auth/setup)
      POST   /api/auth/login              { username, password }
      POST   /api/auth/logout
      POST   /api/account/password        { current, new }
-     DELETE /api/account                 { password }  usuwa konto z projektami przechowywanymi w ProjectHub
+     DELETE /api/account                 { password }  deletes the account along with projects stored in ProjectHub
 
-   Projekty
-     GET    /api/projects                -> [Project]   (w kolejności użytkownika)
+   Projects
+     GET    /api/projects                -> [Project]   (in the user’s order)
      POST   /api/projects                Project bez id -> Project
-     PUT    /api/projects/{id}           CZĘŚCIOWY zapis: tylko przesłane pola -> Project
-     PUT    /api/projects/order          { ids: [id, ...] }  zapisuje własną kolejność wszystkich projektów
-     DELETE /api/projects/{id}           usuwa wpis z bazy, NIGDY plików z dysku
-     POST   /api/projects/{id}/run       { commandId }  uruchamia ZAPISANE polecenie w folderze projektu -> { message }
-     POST   /api/projects/{id}/open      { path? }  otwiera folder (lub podfolder) w Eksploratorze -> { message }
-     POST   /api/projects/{id}/images    multipart, pole "files" -> Project
+     PUT    /api/projects/{id}           PARTIAL save: only the sent fields -> Project
+     PUT    /api/projects/order          { ids: [id, ...] }  saves the custom order of all projects
+     DELETE /api/projects/{id}           removes the entry from the database, NEVER files on disk
+     POST   /api/projects/{id}/run       { commandId }  runs the SAVED command in the project folder -> { message }
+     POST   /api/projects/{id}/open      { path? }  opens the folder (or subfolder) in Explorer -> { message }
+     POST   /api/projects/{id}/images    multipart, field "files" -> Project
      DELETE /api/projects/{id}/images/{imageId}        -> Project
-     POST   /api/projects/{id}/images/{imageId}/cover  ustawia zdjęcie jako pierwsze (baner) -> Project
+     POST   /api/projects/{id}/images/{imageId}/cover  sets the photo as the first one (banner) -> Project
 
-   Pliki projektu (ścieżki ZAWSZE względne do folderu projektu; wyjście poza niego = 400)
+   Project files (paths are ALWAYS relative to the project folder; escaping it = 400)
      GET    /api/projects/{id}/files?path=   -> { path, entries: [{ name, type: "dir"|"file", size, modified }] }
      GET    /api/projects/{id}/file?path=    -> { name, size, kind: "text"|"image"|"binary", content?, url?, truncated? }
-                                               (tekst do ok. 200 KB; obrazy jako url do endpointu serwującego)
+                                               (text up to ~200 KB; images as a url to the serving endpoint)
 
-   Projekty przechowywane w ProjectHub (storage "managed": pliki wgrane do aplikacji zamiast ścieżki na dysku)
-     POST   /api/projects/{id}/upload      multipart: files[] + paths (JSON, ścieżki względne) + base? -> { project, saved, skipped }
+   Projects stored in ProjectHub (storage "managed": files uploaded into the app instead of a disk path)
+     POST   /api/projects/{id}/upload      multipart: files[] + paths (JSON, relative paths) + base? -> { project, saved, skipped }
      POST   /api/projects/{id}/upload-zip  multipart: file (ZIP) + restore? -> { project, saved, skipped }
-     PUT    /api/projects/{id}/file        { path, content }  zapis pliku tekstowego
-     DELETE /api/projects/{id}/file?path=  usuwa plik lub folder
+     PUT    /api/projects/{id}/file        { path, content }  saves a text file
+     DELETE /api/projects/{id}/file?path=  deletes a file or folder
      POST   /api/projects/{id}/rename      { from, to }
-     POST   /api/projects/{id}/preview     { path? } -> { base, url, path, files }  adres podglądu na żywo (token w adresie)
-     GET    /api/projects/{id}/signature   -> { sig }  odcisk plików, zmienia się po edycji (odświeżanie podglądu)
-     GET    /api/projects/{id}/download    ZIP: pliki + PROJECTHUB-INFO (opis, notatki, dokumentacja, zadania)
-     GET    /api/backup/download?ids=a,b   ZIP wielu projektów
+     POST   /api/projects/{id}/preview     { path? } -> { base, url, path, files }  live preview address (token in the URL)
+     GET    /api/projects/{id}/signature   -> { sig }  fingerprint of the files, changes after edits (preview refresh)
+     GET    /api/projects/{id}/download    ZIP: files + PROJECTHUB-INFO (description, notes, documentation, tasks)
+     GET    /api/backup/download?ids=a,b   ZIP of several projects
 
-   Rozmiary, skanowanie, backup, dane
-     POST   /api/sizes                   przelicza rozmiary folderów -> { sizes: { [id]: bajty } }
+   Sizes, scanning, backup, data
+     POST   /api/sizes                   recalculates folder sizes -> { sizes: { [id]: bytes } }
      POST   /api/scan                    { path } -> { path, folders: [{ name, path, tech: [], files }] }
      POST   /api/backup                  { ids: [], destination, exclude: [] } -> { results: [{ id, ok, file, error, backedUpAt }] }
      GET    /api/export                  -> { version, projects: [Project] }
@@ -57,26 +57,26 @@
               commands: [{ id, label, cmd }],
               tasks: [{ id, text, state: "todo"|"doing"|"done" }],
               docs: [{ id, title, body (Markdown) }],
-              images: [{ id, name, url }], sizeBytes, updatedAt, backedUpAt }  (daty w ISO 8601)
-   Identyfikatory poleceń, zadań i stron dokumentacji nadaje front (krótkie losowe teksty).
+              images: [{ id, name, url }], sizeBytes, updatedAt, backedUpAt }  (dates in ISO 8601)
+   Identifiers of commands, tasks and doc pages are assigned by the front (short random strings).
 
-   Błędy: status 4xx/5xx i { "detail": "komunikat po polsku" }. Status 401 odsyła do logowania. */
+   Errors: status 4xx/5xx and { "detail": "message (Polish, from the backend)" }. Status 401 redirects to the login page. */
 
 (function () {
   'use strict';
 
   try {
     if (new URLSearchParams(location.search).has('demo')) sessionStorage.setItem('ph_demo', '1');
-  } catch (e) { /* brak sessionStorage, trudno */ }
+  } catch (e) { /* no sessionStorage, oh well */ }
   let demoFlag = false;
-  try { demoFlag = sessionStorage.getItem('ph_demo') === '1'; } catch (e) { /* j.w. */ }
+  try { demoFlag = sessionStorage.getItem('ph_demo') === '1'; } catch (e) { /* same as above */ }
   const MOCK = location.protocol === 'file:' || demoFlag;
 
   class ApiError extends Error {
     constructor(message, status) { super(message); this.name = 'ApiError'; this.status = status; }
   }
 
-  /* ---------- tryb serwerowy ---------- */
+  /* ---------- server mode ---------- */
 
   function csrfToken() {
     const m = document.cookie.match(/(?:^|;\s*)csrf_token=([^;]*)/);
@@ -87,7 +87,7 @@
     const d = data && data.detail;
     if (typeof d === 'string') return d;
     if (Array.isArray(d)) return d.map(x => x.msg || '').filter(Boolean).join(' ');
-    return 'Coś poszło nie tak (kod ' + status + ').';
+    return 'Something went wrong (code ' + status + ').';
   }
 
   async function req(method, url, body, opts) {
@@ -106,13 +106,13 @@
     try {
       res = await fetch(url, init);
     } catch (e) {
-      throw new ApiError('Nie udało się połączyć z serwerem. Sprawdź, czy ProjectHub jest uruchomiony.', 0);
+      throw new ApiError('Could not reach the server. Make sure ProjectHub is running.', 0);
     }
     let data = null;
-    try { data = await res.json(); } catch (e) { /* pusta odpowiedź */ }
+    try { data = await res.json(); } catch (e) { /* empty response */ }
     if (res.status === 401 && !opts.noRedirect) {
       location.href = 'login.html';
-      throw new ApiError('Sesja wygasła. Zaloguj się ponownie.', 401);
+      throw new ApiError('Session expired. Please log in again.', 401);
     }
     if (!res.ok) throw new ApiError(detailText(data, res.status), res.status);
     return data;
@@ -125,18 +125,18 @@
       const t = csrfToken();
       if (t) x.setRequestHeader('X-CSRF-Token', t);
       if (x.upload && onProgress) x.upload.onprogress = e => { if (e.lengthComputable) onProgress(e.loaded); };
-      x.onerror = () => reject(new ApiError('Nie udało się połączyć z serwerem. Sprawdź połączenie.', 0));
+      x.onerror = () => reject(new ApiError('Could not reach the server. Check the connection.', 0));
       x.onload = () => {
         let data = null;
-        try { data = JSON.parse(x.responseText); } catch (e) { /* pusta odpowiedź */ }
-        if (x.status === 401) { location.href = 'login.html'; reject(new ApiError('Sesja wygasła. Zaloguj się ponownie.', 401)); return; }
+        try { data = JSON.parse(x.responseText); } catch (e) { /* empty response */ }
+        if (x.status === 401) { location.href = 'login.html'; reject(new ApiError('Session expired. Please log in again.', 401)); return; }
         if (x.status >= 400) reject(new ApiError(detailText(data, x.status), x.status)); else resolve(data);
       };
       x.send(form);
     });
   }
 
-  /* Wgrywanie wielu plików partiami (do 60 plików i ok. 30 MB na zapytanie), z jednym wspólnym postępem. */
+  /* Uploading files in batches (up to 60 files and about 30 MB per request), one shared progress. */
   async function uploadBatches(id, entries, opts) {
     opts = opts || {};
     const total = entries.reduce((n, e) => n + e.file.size, 0) || 1;
@@ -210,7 +210,7 @@
     importData: data => req('POST', '/api/import', data)
   };
 
-  /* ---------- tryb podglądu (demo) ---------- */
+  /* ---------- preview mode (demo) ---------- */
 
   const DEMO = window.PH_DEMO;
   const K = { acc: 'ph_account', ses: 'ph_session', prj: 'ph_projects', off: 'ph_demo_off', ver: 'ph_data_ver' };
@@ -224,7 +224,7 @@
     },
     set(k, v) {
       try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {
-        throw new ApiError('Pamięć przeglądarki jest pełna. Usuń część zdjęć z projektów demo.', 507);
+        throw new ApiError('Browser storage is full. Remove some photos from the demo projects.', 507);
       }
     }
   };
@@ -240,7 +240,7 @@
 
   function fileToDataUrl(file) {
     return new Promise((resolve, reject) => {
-      const fail = () => reject(new ApiError('Nie udało się wczytać pliku „' + file.name + '”.', 400));
+      const fail = () => reject(new ApiError('Could not read file “' + file.name + '”.', 400));
       const fr = new FileReader();
       fr.onerror = fail;
       fr.onload = () => {
@@ -260,15 +260,15 @@
     });
   }
 
-  const slug = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/ł/g, 'l').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'projekt';
+  const slug = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/ł/g, 'l').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'project';
 
   function normP(p) {
     const o = Object.assign({
-      description: '', notes: '', category: 'Inne', tech: [], tags: [], images: [], commands: [], tasks: [], docs: [],
+      description: '', notes: '', category: 'Other', tech: [], tags: [], images: [], commands: [], tasks: [], docs: [],
       favorite: false, archived: false, status: 'active', storage: 'local', icon: '', color: '', sizeBytes: null, backedUpAt: null, updatedAt: new Date().toISOString()
     }, p);
     if (!Array.isArray(o.commands)) o.commands = [];
-    if (!o.commands.length && o.runCommand) o.commands = [{ id: uid(), label: 'Uruchom', cmd: o.runCommand }];
+    if (!o.commands.length && o.runCommand) o.commands = [{ id: uid(), label: 'Run', cmd: o.runCommand }];
     delete o.runCommand;
     ['tech', 'tags', 'images', 'tasks', 'docs'].forEach(k => { if (!Array.isArray(o[k])) o[k] = []; });
     if (['idea', 'active', 'paused', 'done'].indexOf(o.status) < 0) o.status = 'active';
@@ -279,23 +279,23 @@
     if (store.get(K.ver, null) !== DATA_VERSION) {
       store.set(K.prj, DEMO.seed());
       store.set(K.ver, DATA_VERSION);
-      try { localStorage.removeItem(K.off); } catch (e) { /* j.w. */ }
+      try { localStorage.removeItem(K.off); } catch (e) { /* same as above */ }
     }
     return store.get(K.prj, []).map(normP);
   }
   function findIn(list, id) {
     const i = list.findIndex(x => x.id === id);
-    if (i < 0) throw new ApiError('Nie znaleziono projektu. Odśwież stronę.', 404);
+    if (i < 0) throw new ApiError('Project not found. Refresh the page.', 404);
     return i;
   }
   const QUIET = ['favorite', 'archived', 'status'];
 
-  /* drzewo plików demo */
+  /* demo file tree */
   function nodeAt(p, path) {
     let n = DEMO.buildTree(p);
     const parts = String(path || '').split('/').filter(Boolean);
     for (const part of parts) {
-      if (part === '..' || !n.dir || !n.children[part]) throw new ApiError('Nie znaleziono folderu lub pliku w projekcie.', 404);
+      if (part === '..' || !n.dir || !n.children[part]) throw new ApiError('Folder or file not found in the project.', 404);
       n = n.children[part];
     }
     return n;
@@ -310,7 +310,7 @@
       await wait(60);
       const acc = store.get(K.acc, null);
       let on = false;
-      try { on = sessionStorage.getItem(K.ses) === '1'; } catch (e) { /* j.w. */ }
+      try { on = sessionStorage.getItem(K.ses) === '1'; } catch (e) { /* same as above */ }
       return {
         configured: !!acc, authenticated: !!acc && on, username: acc ? acc.username : null, mode: 'demo', registration: 'open',
         features: { run: true, scan: true, localPaths: true, openFolder: true, backupToPath: true, upload: false, preview: false },
@@ -321,15 +321,15 @@
     async changePassword(current, next) {
       await wait(150);
       const acc = store.get(K.acc, null);
-      if (!acc || acc.hash !== await sha(current)) throw new ApiError('Hasło jest nieprawidłowe.', 403);
-      if (String(next).length < 8) throw new ApiError('Hasło jest za krótkie. Użyj co najmniej 8 znaków.', 400);
+      if (!acc || acc.hash !== await sha(current)) throw new ApiError('The password is incorrect.', 403);
+      if (String(next).length < 8) throw new ApiError('The password is too short. Use at least 8 characters.', 400);
       store.set(K.acc, { username: acc.username, hash: await sha(next) });
       return { ok: true };
     },
     async deleteAccount(password) {
       await wait(150);
       const acc = store.get(K.acc, null);
-      if (!acc || acc.hash !== await sha(password)) throw new ApiError('Hasło jest nieprawidłowe.', 403);
+      if (!acc || acc.hash !== await sha(password)) throw new ApiError('The password is incorrect.', 403);
       this.resetDemo();
       return { ok: true };
     },
@@ -337,7 +337,7 @@
     backupDownloadUrl: () => '#',
     async setup(username, password) {
       await wait(150);
-      if (store.get(K.acc, null)) throw new ApiError('Konto już istnieje. Zaloguj się.', 409);
+      if (store.get(K.acc, null)) throw new ApiError('The account already exists. Log in.', 409);
       store.set(K.acc, { username, hash: await sha(password) });
       projects();
       sessionStorage.setItem(K.ses, '1');
@@ -347,7 +347,7 @@
       await wait(150);
       const acc = store.get(K.acc, null);
       if (!acc || acc.username !== username || acc.hash !== await sha(password)) {
-        throw new ApiError('Nieprawidłowy login lub hasło.', 401);
+        throw new ApiError('Wrong username or password.', 401);
       }
       sessionStorage.setItem(K.ses, '1');
       return { username };
@@ -361,7 +361,7 @@
     async listProjects() {
       await wait(80);
       const list = projects();
-      /* projekt demo wraca, chyba że sam go usunąłeś */
+      /* the demo project comes back unless you removed it yourself */
       if (!list.some(x => x.id === 'demo-projecthub') && !store.get(K.off, false)) {
         list.unshift(normP(DEMO.seed()[0]));
         store.set(K.prj, list);
@@ -411,13 +411,13 @@
       await wait(280);
       const p = projects()[findIn(projects(), id)];
       const c = commandId ? p.commands.find(x => x.id === commandId) : p.commands[0];
-      if (!c) throw new ApiError('Ten projekt nie ma takiego polecenia. Dodaj je w edycji.', 400);
-      return { message: 'Tryb podglądu: tu uruchomiłoby się „' + c.cmd + '” w folderze projektu.' };
+      if (!c) throw new ApiError('This project has no such command. Add it in the edit form.', 400);
+      return { message: 'Preview mode: this would run “' + c.cmd + '” in the project folder.' };
     },
     async openFolder(id, path) {
       await wait(150);
       const p = projects()[findIn(projects(), id)];
-      return { message: 'Tryb podglądu: tu otworzyłby się Eksplorator w folderze ' + p.path + (path ? '\\' + path.replace(/\//g, '\\') : '') };
+      return { message: 'Preview mode: Explorer would open here in the folder ' + p.path + (path ? '\\' + path.replace(/\//g, '\\') : '') };
     },
     async addImages(id, files) {
       const list = projects(), i = findIn(list, id);
@@ -444,7 +444,7 @@
       await wait(160);
       const p = projects()[findIn(projects(), id)];
       const n = nodeAt(p, path);
-      if (!n.dir) throw new ApiError('To nie jest folder.', 400);
+      if (!n.dir) throw new ApiError('This is not a folder.', 400);
       const entries = Object.keys(n.children).map(name => {
         const c = n.children[name];
         return { name, type: c.dir ? 'dir' : 'file', size: c.dir ? null : c.size, modified: modifiedFor(p, (path || '') + name) };
@@ -455,7 +455,7 @@
       await wait(120);
       const p = projects()[findIn(projects(), id)];
       const n = nodeAt(p, path);
-      if (n.dir) throw new ApiError('To jest folder, nie plik.', 400);
+      if (n.dir) throw new ApiError('This is a folder, not a file.', 400);
       const name = path.split('/').pop();
       if (n.content.indexOf('__img:') === 0) return { name, size: n.size, kind: 'image', url: DEMO.shot(name, +n.content.slice(6)) };
       if (!TEXT_EXT.test(name) && name.indexOf('.') >= 0) return { name, size: n.size, kind: 'binary' };
@@ -483,7 +483,7 @@
       const dest = destination.replace(/[\\/]+$/, '');
       const results = ids.map(id => {
         const i = list.findIndex(x => x.id === id);
-        if (i < 0) return { id, ok: false, error: 'Nie znaleziono projektu.' };
+        if (i < 0) return { id, ok: false, error: 'Project not found.' };
         list[i].backedUpAt = now.toISOString();
         return { id, ok: true, file: dest + '\\' + slug(list[i].name) + '-' + day + '.zip', backedUpAt: list[i].backedUpAt };
       });
@@ -496,7 +496,7 @@
     },
     async importData(data) {
       await wait(250);
-      if (!data || !Array.isArray(data.projects)) throw new ApiError('To nie wygląda na plik eksportu ProjectHub.', 400);
+      if (!data || !Array.isArray(data.projects)) throw new ApiError('This does not look like a ProjectHub export file.', 400);
       const list = projects();
       let n = 0;
       data.projects.forEach(raw => {
@@ -511,7 +511,7 @@
       return { imported: n };
     },
     resetDemo() {
-      Object.values(K).forEach(k => { try { localStorage.removeItem(k); sessionStorage.removeItem(k); } catch (e) { /* j.w. */ } });
+      Object.values(K).forEach(k => { try { localStorage.removeItem(k); sessionStorage.removeItem(k); } catch (e) { /* same as above */ } });
     }
   };
 

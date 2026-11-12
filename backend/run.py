@@ -1,4 +1,4 @@
-"""Uruchamia ProjectHub. Lokalnie: http://127.0.0.1:8765 (tylko ten komputer). Tryb serwera: PROJECTHUB_MODE=hosted."""
+"""Runs ProjectHub. Locally: http://127.0.0.1:8765 (this machine only). Server mode: PROJECTHUB_MODE=hosted."""
 import threading
 import webbrowser
 
@@ -12,9 +12,9 @@ if __name__ == "__main__":
         import os
         if os.environ.get("PROJECTHUB_NO_BROWSER") != "1":
             threading.Timer(1.2, lambda: webbrowser.open(local_url)).start()
-    print("ProjectHub (%s) działa na http://%s:%d/  (Ctrl+C zatrzymuje)" % (config.MODE, config.HOST, config.PORT))
+    print("ProjectHub (%s) running on http://%s:%d/  (Ctrl+C stops it)" % (config.MODE, config.HOST, config.PORT))
     import sys
-    if getattr(sys, "frozen", False):          # wersja spakowana (PyInstaller) nie umie importować po nazwie tekstowej
+    if getattr(sys, "frozen", False):          # after packaging with PyInstaller, "by name" imports don't work, it has to be hardcoded
         from main import app as target
     else:
         target = "main:app"

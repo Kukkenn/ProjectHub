@@ -1,4 +1,4 @@
-/* Ustawia motyw i kolor akcentu zanim pojawi się strona (bez mignięcia). Klucze jak w lib.js: ph_settings. */
+/* Applies the theme and accent color before the page shows up (no flash). Keys as in lib.js: ph_settings. */
 (function () {
   try {
     var s = JSON.parse(localStorage.getItem('ph_settings') || '{}');
@@ -15,5 +15,5 @@
       root.style.setProperty('--on-signal', (0.299 * r + 0.587 * g + 0.114 * b) > 150 ? '#1A1405' : '#FFFFFF');
       root.style.setProperty('--signal-d', 'color-mix(in srgb, ' + s.accentCustom + ' 78%, white)');
     }
-  } catch (e) { /* bez zapamiętanych ustawień */ }
+  } catch (e) { /* no saved settings */ }
 })();

@@ -1,4 +1,4 @@
-# Zamień na swoją domenę (rekord DNS musi wskazywać na serwer). Certyfikat HTTPS Caddy załatwia sam.
+# Replace with your own domain (the DNS record must point at the server). Caddy takes care of the HTTPS certificate itself.
 projekty.twojadomena.pl {
 	encode gzip
 	request_body {

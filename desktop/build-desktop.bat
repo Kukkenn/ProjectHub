@@ -1,5 +1,5 @@
 @echo off
-REM Buduje aplikacje desktopowa na Windows. Wymaga: Python 3.10+, Rust (https://rustup.rs) i "Build Tools for Visual Studio" (C++).
+REM Builds the desktop app on Windows. Requires: Python 3.10+, Rust (https://rustup.rs) and "Build Tools for Visual Studio" (C++).
 cd /d "%~dp0"
 python -m venv .build-venv || goto :err
 call .build-venv\Scripts\activate.bat
@@ -16,10 +16,10 @@ pushd src-tauri
 cargo tauri icon ..\app-icon.png || goto :err
 cargo tauri build || goto :err
 popd
-echo Gotowe: instalator jest w desktop\src-tauri\target\release\bundle\
+echo Done: the installer is in desktop\src-tauri\target\release\bundle\
 pause
 exit /b 0
 :err
-echo Cos poszlo nie tak, patrz komunikaty powyzej.
+echo Something went wrong, see the messages above.
 pause
 exit /b 1

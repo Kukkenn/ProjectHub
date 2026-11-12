@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="pl">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#0E0C1A">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ProjectHub: logowanie</title>
+  <title>ProjectHub: log in</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600..800&family=DM+Sans:opsz,wght@9..40,400..650&family=JetBrains+Mono&display=swap" rel="stylesheet">
@@ -23,35 +23,37 @@
         <i style="--tab: var(--c3); --r: -1.5deg; --x: 4px; --y: 2px"></i>
       </div>
 
-      <h1 id="title">Zaloguj się</h1>
-      <p class="lead" id="lead">Wpisz dane, żeby otworzyć katalog projektów.</p>
+      <h1 id="title">Log in</h1>
+      <p class="lead" id="lead">Enter your details to open the project catalog.</p>
 
       <form id="authForm" novalidate>
         <p class="form-error" id="error" role="alert" hidden></p>
 
         <div class="field">
-          <label for="username">Login</label>
+          <label for="username">Username</label>
           <input id="username" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required>
         </div>
         <div class="field">
-          <label for="password">Hasło</label>
+          <label for="password">Password</label>
           <input id="password" name="password" type="password" autocomplete="current-password" required>
-          <p class="hint" id="pwHint" hidden>Co najmniej 8 znaków.</p>
+          <p class="hint" id="pwHint" hidden>At least 8 characters.</p>
         </div>
         <div class="field" id="confirmField" hidden>
-          <label for="confirm">Powtórz hasło</label>
+          <label for="confirm">Repeat password</label>
           <input id="confirm" name="confirm" type="password" autocomplete="new-password">
         </div>
 
-        <button class="btn btn-primary" id="submit" type="submit">Zaloguj</button>
+        <button class="btn btn-primary" id="submit" type="submit">Log in</button>
         <p class="switch-mode" id="switchBox" hidden><span id="switchText"></span> <button type="button" class="linklike" id="switchBtn"></button></p>
-        <p class="hint" id="demoNote" hidden>Tryb podglądu: konto powstaje tylko w tej przeglądarce.</p>
-        <button class="btn" id="demoBtn" type="button" hidden>Zobacz demo bez zakładania konta</button>
+        <p class="hint" id="demoNote" hidden>Preview mode: the account is created only in this browser.</p>
+        <button class="btn" id="demoBtn" type="button" hidden>Try the demo without creating an account</button>
       </form>
     </div>
   </main>
 
   <script src="js/demo-data.js"></script>
+  <script src="js/lang-pl.js"></script>
+  <script src="js/i18n.js"></script>
   <script src="js/api.js"></script>
   <script src="js/login.js"></script>
 </body>

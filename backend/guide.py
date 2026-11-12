@@ -1,444 +1,444 @@
-"""Przewodnik po ProjectHub: projekt, który dostaje każde nowe konto.
+"""ProjectHub guide: a project every new account gets.
 
-Każda strona to zwykły Markdown. Treść trafia do bazy (zakładka Dokumentacja)
-i jako pliki .md do folderu data/guide/<konto>/ (zakładka Pliki), więc można ją
-kopiować, edytować albo pobrać z dysku.
+Each page is plain Markdown. The content goes into the database (Documentation
+tab) and as .md files into data/guide/<account>/ (Files tab), so you can copy,
+edit or download it from disk.
 """
 
-PROJECT_NAME = "Przewodnik ProjectHub"
-DESCRIPTION = ("Instrukcja całej aplikacji w Markdownie: każda funkcja, jak jej używać "
-               "i gotowe przykłady do skopiowania. Zawsze możesz tu wrócić.")
+PROJECT_NAME = "ProjectHub Guide"
+DESCRIPTION = ("A Markdown manual for the whole app: every feature, how to use it "
+               "and ready-made examples to copy. You can always come back here.")
 CATEGORY = "ProjectHub"
 TECH = ["Markdown"]
-TAGS = ["przewodnik", "instrukcja"]
+TAGS = ["guide", "manual"]
 
-NOTES = """# Moje notatki
+NOTES = """# My notes
 
-Tu możesz pisać własne notatki do projektu. To zwykły Markdown, a zapis dzieje się sam.
+You can write your own notes about the project here. It's plain Markdown and it saves itself.
 
 > [!TIP]
-> Składnię Markdown znajdziesz w zakładce **Dokumentacja**, na stronie „Markdown: ściągawka”.
+> You'll find the Markdown syntax in the **Documentation** tab, on the “Markdown: cheat sheet” page.
 
-- [ ] Co dziś robię?
-- [ ] Co mnie blokuje?
+- [ ] What am I doing today?
+- [ ] What's blocking me?
 """
 
 COMMANDS = [
-    {"id": "przyklad", "label": "Wersja Pythona", "cmd": "python --version"},
+    {"id": "przyklad", "label": "Python version", "cmd": "python --version"},
 ]
 
 TASKS = [
-    ("g1", "Przeczytaj stronę „Start” w dokumentacji", "todo"),
-    ("g2", "Dodaj swój pierwszy projekt (przycisk „Dodaj projekt”)", "todo"),
-    ("g3", "Zeskanuj Pulpit i zaimportuj wybrane foldery", "todo"),
-    ("g4", "Wklej zrzut ekranu do galerii projektu (Ctrl+V)", "todo"),
-    ("g5", "Dodaj własne polecenie uruchomienia", "todo"),
-    ("g6", "Zrób pierwszy backup", "todo"),
-    ("g7", "Otwórz paletę poleceń (Ctrl+K)", "todo"),
+    ("g1", "Read the “Start” page in the documentation", "todo"),
+    ("g2", "Add your first project (the “Add project” button)", "todo"),
+    ("g3", "Scan your Desktop and import the folders you pick", "todo"),
+    ("g4", "Paste a screenshot into the project gallery (Ctrl+V)", "todo"),
+    ("g5", "Add your own run command", "todo"),
+    ("g6", "Make your first backup", "todo"),
+    ("g7", "Open the command palette (Ctrl+K)", "todo"),
 ]
 
 PAGES = [
     ("start", "Start", """# Start
 
-**ProjectHub** to katalog Twoich projektów. Zbiera w jednym miejscu opis, notatki,
-dokumentację, zadania, zdjęcia, polecenia uruchomienia, podgląd strony na żywo i backupy.
-Możesz używać go na swoim komputerze (aplikacja desktopowa) albo na serwerze, gdzie każdy ma własne konto.
+**ProjectHub** is a catalog of your projects. It keeps descriptions, notes, documentation, tasks,
+images, run commands, a live page preview and backups in one place. You can use it on your own
+computer (desktop app) or on a server, where everyone has their own account.
 
-## Pierwsze kroki
+## Getting started
 
-1. Kliknij **Dodaj projekt** (u góry), wpisz nazwę i przeciągnij folder, pliki albo ZIP (pliki trafią do ProjectHub). Na komputerze możesz zamiast tego wskazać ścieżkę do folderu.
-2. Na komputerze możesz też kliknąć **Skanuj**, wskazać folder, na przykład Pulpit, i zaznaczyć podfoldery, które są projektami.
-3. Kliknij kafelek projektu, żeby otworzyć jego pełną stronę.
-4. Dodaj zdjęcia, zadania, notatki i polecenia.
-5. Raz na jakiś czas kliknij **Backup**.
+1. Click **Add project** (at the top), type a name and drop in a folder, files or a ZIP (the files go into ProjectHub). On the desktop app you can point it to a folder path instead.
+2. On the desktop app you can also click **Scan**, pick a folder, such as your Desktop, and tick the subfolders that are projects.
+3. Click a project tile to open its full page.
+4. Add images, tasks, notes and commands.
+5. Every now and then, click **Backup**.
 
 > [!NOTE]
-> Ten projekt jest przewodnikiem. Został utworzony razem z kontem i możesz go dowolnie edytować.
-> Oryginalne strony leżą też jako pliki w zakładce **Pliki**.
+> This project is a guide. It was created along with your account and you can edit it however you like.
+> The original pages also live as files in the **Files** tab.
 
-## Co gdzie jest
+## Where everything is
 
-| Miejsce | Do czego służy |
+| Place | What it's for |
 |---|---|
-| Biblioteka | kafelki wszystkich projektów, filtry, ulubione |
-| Zadania | tablica zadań ze wszystkich projektów |
-| Archiwum | projekty, których nie rozwijasz |
-| Ustawienia | motyw i kolory, sposób dodawania projektów, backup, konto, dane |
-| Zakładka Podgląd | strona projektu na żywo, jak Live Server |
-| Ctrl+K | paleta poleceń: skok do projektu, uruchomienie, akcje |
+| Library | tiles of all projects, filters, favorites |
+| Tasks | a task board across all projects |
+| Archive | projects you're not working on |
+| Settings | theme and colors, how projects are added, backup, account, data |
+| Preview tab | the project's page live, like Live Server |
+| Ctrl+K | command palette: jump to a project, run commands, actions |
 
-## Zasady bezpieczeństwa w jednym zdaniu
+## Security in one sentence
 
-Aplikacja nigdy sama nie przenosi ani nie usuwa Twoich plików, a uruchamia wyłącznie polecenia, które sam zapisałeś.
+The app never moves or deletes your files on its own, and it only runs commands you saved yourself.
 """),
 
-    ("projekty", "Projekty", """# Projekty
+    ("projekty", "Projects", """# Projects
 
-## Dodawanie
+## Adding
 
-Przycisk **Dodaj projekt** otwiera formularz. Pola:
+The **Add project** button opens a form. Fields:
 
-| Pole | Co wpisać | Przykład |
+| Field | What to type | Example |
 |---|---|---|
-| Nazwa | krótka nazwa | `Bot do Discorda` |
-| Ścieżka | pełna ścieżka do folderu | `D:\\Projekty\\bot` |
-| Status | etap prac | Pomysł, W toku, Wstrzymany, Skończony |
-| Polecenia | przyciski uruchomienia | patrz strona „Polecenia” |
-| Opis | jedno-dwa zdania | `Bot moderujący serwer znajomych` |
-| Kategoria | zakładka w bibliotece | `Boty i skrypty` |
-| Technologie | wpisz i Enter | `Python`, `FastAPI` |
-| Tagi | własne słowa kluczowe | `hobby`, `na-pozniej` |
+| Name | a short name | `Discord bot` |
+| Path | the full path to the folder | `D:\\Projects\\bot` |
+| Status | the stage of work | Idea, In progress, Paused, Done |
+| Commands | run buttons | see the “Commands” page |
+| Description | one or two sentences | `A moderation bot for a friends' server` |
+| Category | a tab in the library | `Bots and scripts` |
+| Technologies | type and press Enter | `Python`, `FastAPI` |
+| Tags | your own keywords | `hobby`, `for-later` |
 
 > [!TIP]
-> Ścieżkę skopiujesz w Eksploratorze: zaznacz folder i naciśnij **Ctrl + Shift + C**. Cudzysłowy usuwam sam.
+> You can copy the path in File Explorer: select the folder and press **Ctrl + Shift + C**. I strip the quotes myself.
 
-## Ulubione, status, archiwum
+## Favorites, status, archive
 
-- **Gwiazdka** na kafelku przypina projekt na górze biblioteki.
-- **Status** zmienisz na stronie projektu w panelu po prawej. W bibliotece możesz filtrować po statusie.
-- **Archiwum** (menu „Więcej” na stronie projektu) chowa projekt z głównej listy. Nic nie przepada, w każdej chwili możesz go przywrócić.
+- **The star** on a tile pins the project to the top of the library.
+- **Status** can be changed on the project page in the panel on the right. In the library you can filter by status.
+- **Archive** (the “More” menu on the project page) hides the project from the main list. Nothing is lost — you can restore it at any time.
 
-## Kolejność
+## Ordering
 
-Przeciągnij kafelek w nowe miejsce, gdy sortowanie ustawione jest na „Własna kolejność”.
+Drag a tile to a new spot while sorting is set to “Custom order”.
 
-## Usuwanie
+## Deleting
 
 > [!WARNING]
-> „Usuń z katalogu” kasuje tylko wpis w bazie ProjectHub. **Pliki w folderze projektu zostają nietknięte.**
+> “Remove from catalog” only deletes the entry in the ProjectHub database. **The files in the project folder are left untouched.**
 
-## Wyszukiwanie
+## Search
 
-Klawisz `/` przenosi kursor do wyszukiwarki. Szukam w nazwie, opisie, technologiach i tagach.
+The `/` key moves the cursor to the search box. I search in the name, description, technologies and tags.
 """),
 
-    ("polecenia", "Polecenia uruchomienia", """# Polecenia uruchomienia
+    ("polecenia", "Run commands", """# Run commands
 
-Każdy projekt może mieć **kilka** własnych poleceń. Każde to osobny przycisk,
-na przykład „Serwer”, „Testy”, „Build”. Pierwsze jest na dużym przycisku **Uruchom**,
-pozostałe w rozwijanym menu obok.
+Every project can have **several** of its own commands. Each one is a separate button,
+for example “Server”, “Tests”, “Build”. The first one sits on the big **Run** button,
+the rest are in the dropdown menu next to it.
 
-## Jak je pisać
+## How to write them
 
-Polecenie wpisujesz dokładnie tak, jak w terminalu. Uruchamia się w folderze projektu.
+Type the command exactly as you would in a terminal. It runs in the project folder.
 
 ~~~bash
 python main.py
 ~~~
 
-Kilka kroków w jednej linii łącz przez `&&`:
+Chain several steps on one line with `&&`:
 
 ~~~bash
 npm install && npm run dev
 ~~~
 
-## Przykłady
+## Examples
 
-| Nazwa | Polecenie |
+| Name | Command |
 |---|---|
-| Serwer (FastAPI) | `uvicorn main:app --reload` |
-| Skrypt Pythona | `python main.py` |
-| Testy | `pytest -q` |
-| Strona w Node | `npm run dev` |
-| Środowisko wirtualne (Windows) | `.venv\\Scripts\\python main.py` |
-| Otwórz w VS Code | `code .` |
+| Server (FastAPI) | `uvicorn main:app --reload` |
+| Python script | `python main.py` |
+| Tests | `pytest -q` |
+| Node website | `npm run dev` |
+| Virtual environment (Windows) | `.venv\\Scripts\\python main.py` |
+| Open in VS Code | `code .` |
 | Docker | `docker compose up` |
 
-## Gdzie uruchamiają się polecenia
+## Where commands run
 
-Na Windowsie otwiera się nowe okno konsoli, które zostaje po zakończeniu, więc zobaczysz wynik.
-Na innych systemach polecenie działa w tle.
+On Windows a new console window opens and stays after the command finishes, so you'll see the output.
+On other systems the command runs in the background.
 
 > [!IMPORTANT]
-> Serwer wykonuje **tylko polecenia zapisane w bazie** przy projekcie. Nie przyjmuje poleceń „z zewnątrz”.
-> Wpisuj tylko to, czemu ufasz, bo polecenie ma takie same uprawnienia jak Ty.
+> The server only executes **commands saved in the database** on the project. It doesn't accept commands “from outside”.
+> Only enter things you trust, because a command runs with the same permissions as you.
 
-## Kopiowanie
+## Copying
 
-Na stronie projektu, w karcie „Polecenia”, ikona kopiowania wkłada polecenie do schowka.
+On the project page, in the “Commands” tab, the copy icon puts a command on the clipboard.
 """),
 
-    ("zadania", "Zadania", """# Zadania
+    ("zadania", "Tasks", """# Tasks
 
-Każdy projekt ma własną listę zadań, a zakładka **Zadania** na górze pokazuje wszystkie naraz jako tablicę.
+Every project has its own task list, and the **Tasks** tab at the top shows all of them together as a board.
 
-## Stany
+## States
 
-| Stan | Znaczenie |
+| State | Meaning |
 |---|---|
-| Do zrobienia | czeka |
-| W toku | właśnie to robisz (ikona flagi) |
-| Zrobione | zaznaczone ptaszkiem |
+| To do | waiting |
+| In progress | you're working on it right now (flag icon) |
+| Done | checked off |
 
-## W projekcie
+## In a project
 
-- Wpisz treść i naciśnij **Enter**.
-- Kliknij kwadrat, żeby oznaczyć jako zrobione.
-- Kliknij ikonę flagi, żeby oznaczyć jako „w toku”.
-- Dwukrotne kliknięcie tekstu zmienia nazwę.
+- Type the text and press **Enter**.
+- Click the square to mark it as done.
+- Click the flag icon to mark it as “in progress”.
+- Double-click the text to rename it.
 
-## Tablica ze wszystkich projektów
+## The board across all projects
 
-- Przeciągaj karty między kolumnami.
-- Albo użyj strzałek na karcie (działają też z klawiatury).
-- Filtr „Projekt” zawęża tablicę do jednego projektu.
-- Na górze formularza wybierz projekt i dodaj zadanie bez wchodzenia do niego.
-- Nazwa projektu na karcie otwiera jego stronę.
+- Drag cards between columns.
+- Or use the arrows on a card (they work from the keyboard too).
+- The “Project” filter narrows the board down to a single project.
+- At the top of the form, pick a project and add a task without opening it.
+- The project name on a card opens its page.
 
 > [!TIP]
-> Liczba przy „Zadania” w menu to wszystkie zadania, które nie są jeszcze zrobione.
+> The number next to “Tasks” in the menu is all the tasks that aren't done yet.
 """),
 
-    ("markdown", "Markdown: ściągawka", """# Markdown: ściągawka
+    ("markdown", "Markdown: cheat sheet", """# Markdown: cheat sheet
 
-Notatki i dokumentacja piszesz w Markdownie. W edytorze masz tryby **Edycja**, **Podział** (tekst i podgląd obok siebie) i **Podgląd**.
-Zapisuje się samo. Poniżej wszystko, co obsługuje ProjectHub, z gotowymi przykładami.
+You write notes and documentation in Markdown. The editor has **Edit**, **Split** (text and preview side by side) and **Preview** modes.
+Saving is automatic. Below is everything ProjectHub supports, with ready-made examples.
 
-## Nagłówki
+## Headings
 
 ~~~markdown
-# Tytuł strony
-## Sekcja
-### Podsekcja
+# Page title
+## Section
+### Subsection
 ~~~
 
-Nagłówki `##` i `###` tworzą **spis treści** po prawej stronie dokumentacji.
+`##` and `###` headings build the **table of contents** on the right side of the documentation.
 
-## Tekst
+## Text
 
 ~~~markdown
-**pogrubienie**, *kursywa*, ~~przekreślenie~~ i `kod w tekście`
+**bold**, *italic*, ~~strikethrough~~ and `inline code`
 ~~~
 
-Efekt: **pogrubienie**, *kursywa*, ~~przekreślenie~~ i `kod w tekście`.
+The result: **bold**, *italic*, ~~strikethrough~~ and `inline code`.
 
-## Listy
+## Lists
 
 ~~~markdown
-- punkt pierwszy
-- punkt drugi
-  - zagnieżdżony (dwie spacje wcięcia)
+- first bullet
+- second bullet
+  - nested (two spaces of indentation)
 
-1. krok pierwszy
-2. krok drugi
+1. first step
+2. second step
 ~~~
 
-## Zadania z polami wyboru
+## Tasks with checkboxes
 
 ~~~markdown
-- [ ] do zrobienia
-- [x] zrobione
+- [ ] to do
+- [x] done
 ~~~
 
-## Linki
+## Links
 
 ~~~markdown
-[Strona Pythona](https://www.python.org)
+[Python's website](https://www.python.org)
 ~~~
 
 > [!NOTE]
-> Obsługiwane są tylko adresy `https://`, `http://` i `mailto:`. Inne linki wyświetlą się jako zwykły tekst.
+> Only `https://`, `http://` and `mailto:` addresses are supported. Other links will show up as plain text.
 
-## Cytaty
+## Quotes
 
 ~~~markdown
-> To jest cytat.
+> This is a quote.
 ~~~
 
-## Ramki z wyróżnieniem
+## Callout boxes
 
-Cytat z oznaczeniem na początku zamienia się w kolorową ramkę:
+A quote with a marker at the start turns into a colored box:
 
 ~~~markdown
 > [!NOTE]
-> Zwykła uwaga.
+> An ordinary note.
 
 > [!TIP]
-> Podpowiedź.
+> A tip.
 
 > [!WARNING]
-> Ostrzeżenie.
+> A warning.
 
 > [!IMPORTANT]
-> Rzecz najważniejsza.
+> The most important thing.
 ~~~
 
-## Tabele
+## Tables
 
 ~~~markdown
-| Kolumna | Opis |
+| Column | Description |
 |---|---|
-| a | pierwszy wiersz |
-| b | drugi wiersz |
+| a | first row |
+| b | second row |
 ~~~
 
-## Bloki kodu
+## Code blocks
 
-Trzy odwrócone apostrofy albo trzy tyldy, a po nich nazwa języka:
+Three backticks or three tildes, followed by the language name:
 
 ~~~markdown
 ```python
 def hello():
-    print("Cześć")
+    print("Hello")
 ```
 ~~~
 
-Kolorowanie działa dla: `python`, `javascript`, `typescript`, `bash`, `powershell`, `json`, `css`, `html`.
-Każdy blok ma przycisk **Kopiuj**.
+Syntax highlighting works for: `python`, `javascript`, `typescript`, `bash`, `powershell`, `json`, `css`, `html`.
+Every block has a **Copy** button.
 
-## Linia pozioma
+## Horizontal rule
 
 ~~~markdown
 ---
 ~~~
 
-## Skróty w edytorze
+## Editor shortcuts
 
-| Skrót | Efekt |
+| Shortcut | Effect |
 |---|---|
-| Ctrl+B | pogrubienie |
-| Ctrl+I | kursywa |
-| przyciski nad polem | nagłówek, kod, lista, zadanie, cytat, link |
+| Ctrl+B | bold |
+| Ctrl+I | italic |
+| buttons above the field | heading, code, list, task, quote, link |
 """),
 
-    ("dokumentacja", "Dokumentacja projektu", """# Dokumentacja projektu
+    ("dokumentacja", "Project documentation", """# Project documentation
 
-Zakładka **Dokumentacja** to wbudowany, ładny wiki-podręcznik każdego projektu. Nie potrzebujesz GitHuba:
-strony żyją w ProjectHub i są zapisywane razem z projektem.
+The **Documentation** tab is a built-in, pretty wiki for every project. You don't need GitHub:
+the pages live in ProjectHub and are saved with the project.
 
-## Jak to działa
+## How it works
 
-- Lewa kolumna: lista stron.
-- Środek: treść w Markdownie.
-- Prawa kolumna: spis treści z podświetleniem sekcji, w której jesteś.
-- Na dole: przyciski „Poprzednia” i „Następna”.
+- Left column: the list of pages.
+- Middle: the content in Markdown.
+- Right column: a table of contents with the section you're in highlighted.
+- At the bottom: “Previous” and “Next” buttons.
 
-## Przyciski nad stroną
+## Buttons above the page
 
-| Przycisk | Co robi |
+| Button | What it does |
 |---|---|
-| Edytuj | przełącza w edytor Markdown |
-| Zmień nazwę | zmienia tytuł strony |
-| Kopiuj | kopiuje całą stronę jako Markdown |
-| Kosz | usuwa stronę |
+| Edit | switches to the Markdown editor |
+| Rename | changes the page title |
+| Copy | copies the whole page as Markdown |
+| Trash | deletes the page |
 
-## Dobry szkielet strony
+## A good page skeleton
 
 ~~~markdown
-# Nazwa strony
+# Page name
 
-Jedno zdanie o tym, czego dotyczy strona.
+One sentence about what the page covers.
 
-## Wymagania
-## Instalacja
-## Użycie
-## Najczęstsze problemy
+## Requirements
+## Installation
+## Usage
+## Common issues
 ~~~
 
 > [!TIP]
-> Pusty projekt ma przycisk „Wstaw szablon README”, który tworzy taki szkielet za Ciebie.
+> An empty project has a “Insert README template” button that creates this skeleton for you.
 
-## Pobieranie dokumentacji
+## Downloading documentation
 
-- Przycisk **Kopiuj** wkłada stronę do schowka, gotową do wklejenia gdziekolwiek.
-- Strony przewodnika leżą też jako pliki `.md` w zakładce **Pliki**, więc możesz je otworzyć w dowolnym edytorze.
-- W Ustawieniach, w sekcji Dane, jest **eksport JSON** wszystkich projektów razem z dokumentacją.
+- The **Copy** button puts the page on the clipboard, ready to paste anywhere.
+- The guide's pages also live as `.md` files in the **Files** tab, so you can open them in any editor.
+- In Settings, in the Data section, there's a **JSON export** of all projects together with their documentation.
 """),
 
-    ("zdjecia", "Zdjęcia i baner", """# Zdjęcia i baner
+    ("zdjecia", "Images and banner", """# Images and banner
 
-Duży baner u góry strony projektu pochodzi z **pierwszego zdjęcia** w galerii.
-Bez zdjęć pokazuję inicjały projektu w kolorze kategorii.
+The big banner at the top of the project page comes from the **first image** in the gallery.
+Without images I show the project's initials in the category's color.
 
-## Dodawanie zdjęć
+## Adding images
 
-- **Wklej** zrzut ekranu skrótem `Ctrl+V` (na stronie projektu).
-- **Przeciągnij** pliki z Eksploratora na stronę projektu.
-- Albo kliknij „Dodaj” w galerii i wybierz pliki.
+- **Paste** a screenshot with `Ctrl+V` (on the project page).
+- **Drag** files from File Explorer onto the project page.
+- Or click “Add” in the gallery and pick the files.
 
-Obsługiwane formaty: PNG, JPG, WebP, GIF. Do 8 MB na plik.
+Supported formats: PNG, JPG, WebP, GIF. Up to 8 MB per file.
 
 > [!TIP]
-> Windows: `Win + Shift + S` robi zrzut fragmentu ekranu do schowka. Potem wystarczy `Ctrl+V` w ProjectHub.
+> Windows: `Win + Shift + S` grabs a screenshot of part of the screen to the clipboard. Then just `Ctrl+V` in ProjectHub.
 
-## Zarządzanie
+## Managing
 
-| Akcja | Jak |
+| Action | How |
 |---|---|
-| Powiększ | kliknij zdjęcie (strzałki lub klawisze ← → przełączają) |
-| Nowy baner | najedź na miniaturę i kliknij „Ustaw baner” |
-| Usuń | krzyżyk w rogu miniatury |
+| Zoom in | click the image (arrows or the ← → keys switch between them) |
+| New banner | hover over the thumbnail and click “Set banner” |
+| Delete | the cross in the corner of the thumbnail |
 
-## Gdzie są zapisane
+## Where they're stored
 
-Zdjęcia kopiowane są do folderu danych ProjectHub (`data/uploads`). Nie ruszam ani nie zmieniam
-oryginalnych plików. Usunięcie zdjęcia z galerii usuwa tylko tę kopię.
+Images are copied into ProjectHub's data folder (`data/uploads`). I don't touch or change
+the original files. Deleting an image from the gallery only removes that copy.
 """),
 
-    ("pliki", "Przeglądarka plików", """# Przeglądarka plików
+    ("pliki", "File browser", """# File browser
 
-Zakładka **Pliki** pozwala zajrzeć do folderu projektu bez wychodzenia z aplikacji.
+The **Files** tab lets you look into the project folder without leaving the app.
 
-- Kliknij folder, żeby wejść. „Wyżej” cofa o poziom, a okruszki u góry pozwalają skoczyć do dowolnego poziomu.
-- Kliknij plik, żeby zobaczyć podgląd:
-  - tekst i kod z kolorowaniem składni,
-  - pliki `.md` jako ładna dokumentacja (z przełącznikiem „Kod”),
-  - obrazy,
-  - inne pliki: informacja, że podglądu nie ma.
-- **Otwórz w Eksploratorze** otwiera ten folder w systemie (tylko aplikacja na komputerze).
+- Click a folder to go into it. “Up” goes back a level, and the breadcrumbs at the top let you jump to any level.
+- Click a file to see a preview:
+  - text and code with syntax highlighting,
+  - `.md` files as nice documentation (with a “Code” toggle),
+  - images,
+  - other files: a notice that there's no preview.
+- **Open in Explorer** opens this folder in the system (desktop app only).
 
 > [!NOTE]
-> Dla projektu wskazanego **ścieżką** przeglądarka tylko **czyta**: nie zmienia ani nie usuwa plików.
-> Dla projektu **wgranego do ProjectHub** możesz pliki edytować, dodawać, zmieniać nazwy i usuwać (opis w „Dodawanie projektów”).
-> W obu przypadkach nie wyjdziesz poza folder projektu.
-> Pliki tekstowe są pokazywane do około 200 KB.
+> For a project pointed to by a **path**, the browser only **reads**: it doesn't change or delete files.
+> For a project **uploaded into ProjectHub** you can edit files, add them, rename and delete them (described in “Adding projects”).
+> In both cases you can't leave the project folder.
+> Text files are shown up to about 200 KB.
 """),
 
-    ("paleta", "Paleta poleceń i skróty", """# Paleta poleceń i skróty
+    ("paleta", "Command palette and shortcuts", """# Command palette and shortcuts
 
-Naciśnij **Ctrl+K** (na Macu Cmd+K) w dowolnym miejscu aplikacji.
+Press **Ctrl+K** (Cmd+K on a Mac) anywhere in the app.
 
-## Co znajdziesz
+## What you'll find
 
-| Grupa | Przykłady |
+| Group | Examples |
 |---|---|
-| Akcje | dodaj projekt, skanuj folder, zrób backup, rozmiary, przenieś menu |
-| Przejdź do | Biblioteka, Zadania, Archiwum, Ustawienia |
-| Projekty | skok do dowolnego projektu |
-| Uruchom | każde zapisane polecenie każdego projektu |
-| Dokumentacja | strona dokumentacji dowolnego projektu |
+| Actions | add a project, scan a folder, make a backup, sizes, move the menu |
+| Go to | Library, Tasks, Archive, Settings |
+| Projects | jump to any project |
+| Run | every saved command of every project |
+| Documentation | the documentation page of any project |
 
-## Obsługa
+## Using it
 
-- Pisz, a lista zawęża się na bieżąco. Możesz wpisać kilka słów.
-- `↑` `↓` zmieniają wybór, `Home` i `End` skaczą na początek i koniec.
-- `Enter` wykonuje, `Esc` zamyka.
+- Type and the list narrows as you go. You can type a few words.
+- `↑` `↓` change the selection, `Home` and `End` jump to the start and end.
+- `Enter` runs it, `Esc` closes it.
 
-## Inne skróty
+## Other shortcuts
 
-| Skrót | Efekt |
+| Shortcut | Effect |
 |---|---|
-| `/` | szukaj projektu |
-| Ctrl+V | wklej zdjęcie na stronie projektu |
-| Ctrl+B, Ctrl+I | pogrubienie, kursywa w edytorze |
-| Esc | zamknij okno |
+| `/` | search for a project |
+| Ctrl+V | paste an image on the project page |
+| Ctrl+B, Ctrl+I | bold, italic in the editor |
+| Esc | close the window |
 """),
 
-    ("skanowanie", "Skanowanie folderu", """# Skanowanie folderu
+    ("skanowanie", "Scanning a folder", """# Scanning a folder
 
-Masz bałagan na Pulpicie? Przycisk **Skanuj** pomaga zrobić z niego katalog.
+Got a mess on your Desktop? The **Scan** button helps you turn it into a catalog.
 
-1. Wpisz ścieżkę folderu, na przykład `C:\\Users\\Ty\\Desktop`.
-2. Zobaczysz podfoldery wraz z rozpoznanymi technologiami i liczbą plików.
-3. Zaznacz te, które są projektami (nowe są zaznaczone same).
-4. Wybierz kategorię i kliknij **Importuj zaznaczone**.
+1. Type the folder path, for example `C:\\Users\\You\\Desktop`.
+2. You'll see the subfolders along with the detected technologies and file counts.
+3. Tick the ones that are projects (new ones are ticked for you).
+4. Pick a category and click **Import selected**.
 
-## Jak rozpoznaję technologie
+## How I detect technologies
 
-| Znaleziony plik | Technologia |
+| File found | Technology |
 |---|---|
 | `package.json` | Node.js |
-| `requirements.txt`, `pyproject.toml`, pliki `.py` | Python |
+| `requirements.txt`, `pyproject.toml`, `.py` files | Python |
 | `index.html` | HTML |
 | `Cargo.toml` | Rust |
 | `go.mod` | Go |
@@ -448,231 +448,231 @@ Masz bałagan na Pulpicie? Przycisk **Skanuj** pomaga zrobić z niego katalog.
 | `Dockerfile` | Docker |
 
 > [!IMPORTANT]
-> Skanowanie **niczego nie przenosi, nie zmienia nazw i nie usuwa**. Zapisuję tylko ścieżki wybranych folderów.
-> Porządkowanie plików zostaje w Twoich rękach.
+> Scanning **doesn't move, rename or delete anything**. I only save the paths of the folders you selected.
+> Organizing the files stays in your hands.
 """),
 
-    ("wgrywanie", "Dodawanie projektów: ścieżka, kopia, przeniesienie", """# Dodawanie projektów
+    ("wgrywanie", "Adding projects: path, copy, move", """# Adding projects
 
-Projekt może trzymać pliki na dwa sposoby.
+A project can hold its files in two ways.
 
-| Sposób | Gdzie są pliki | Kiedy |
+| Way | Where the files are | When |
 |---|---|---|
-| **W ProjectHub** | w folderze danych aplikacji, edytujesz je w zakładce Pliki | tryb serwera i gdy chcesz mieć wszystko w jednym miejscu |
-| **Ścieżka na dysku** | zostają tam, gdzie są; ProjectHub tylko je czyta | tylko aplikacja na Twoim komputerze |
+| **In ProjectHub** | in the app's data folder, you edit them in the Files tab | server mode and when you want everything in one place |
+| **Path on disk** | they stay where they are; ProjectHub only reads them | desktop app only |
 
-## Wgrywanie
+## Uploading
 
-W oknie **Dodaj projekt** przeciągnij folder, plik albo ZIP na pole z ramką (albo użyj przycisków).
-Pomijam `node_modules`, `.git`, `.venv` i `__pycache__`. Limity widać pod polem.
-Wgranie ZIP-a zrobionego przez ProjectHub odtwarza też opis, notatki, zadania i dokumentację.
+In the **Add project** window, drop a folder, file or ZIP onto the framed field (or use the buttons).
+I skip `node_modules`, `.git`, `.venv` and `__pycache__`. The limits are shown below the field.
+Uploading a ZIP made by ProjectHub also restores the description, notes, tasks and documentation.
 
-## Ustawienie „Dodawanie projektów z dysku” (aplikacja na komputerze)
+## The “Adding projects from disk” setting (desktop app)
 
-W **Ustawieniach → Wygląd i nawigacja** wybierasz, co się dzieje po wskazaniu folderu:
+In **Settings → Appearance and navigation** you choose what happens when you point to a folder:
 
-- **Tylko ścieżka**: zapamiętuję adres folderu, pliki zostają. Zmiany widać od razu.
-- **Kopiuj**: kopiuję pliki do ProjectHub, oryginał zostaje nietknięty.
-- **Przenieś**: kopiuję, a po udanym kopiowaniu usuwam z oryginalnego folderu tylko skopiowane pliki.
-  Zawsze pytam o potwierdzenie, a pominięte foldery (np. `node_modules`) zostają.
+- **Path only**: I remember the folder's address, the files stay put. Changes show up immediately.
+- **Copy**: I copy the files into ProjectHub, the original is left untouched.
+- **Move**: I copy, and after a successful copy I remove from the original folder only the files that were copied.
+  I always ask for confirmation, and skipped folders (like `node_modules`) are left behind.
 
 > [!WARNING]
-> „Przenieś” kasuje pliki w oryginalnym miejscu. Jeśli to jedyny egzemplarz, zrób wcześniej backup.
+> “Move” deletes files in their original location. If that's the only copy, make a backup first.
 
-Jeśli wkleisz ścieżkę do pojedynczego pliku (np. `index.html`), skopiuję tylko ten jeden plik, nie cały folder obok.
+If you paste the path to a single file (like `index.html`), I'll copy only that one file, not the whole folder next to it.
 
-## Edycja plików w ProjectHub
+## Editing files in ProjectHub
 
-W zakładce **Pliki** projektu w ProjectHub możesz: dodać nowy plik, edytować tekst (Ctrl+S zapisuje),
-zmienić nazwę, usunąć plik, wgrać kolejne pliki i pobrać cały projekt jako ZIP.
+In the **Files** tab of a ProjectHub project you can: add a new file, edit text (Ctrl+S saves),
+rename, delete a file, upload more files and download the whole project as a ZIP.
 """),
 
-    ("podglad", "Podgląd strony na żywo", """# Podgląd strony na żywo
+    ("podglad", "Live page preview", """# Live page preview
 
-Zakładka **Podgląd** działa jak rozszerzenie Live Server w Visual Studio Code.
+The **Preview** tab works like the Live Server extension in Visual Studio Code.
 
-1. Otwórz projekt, który ma pliki `.html` (najlepiej `index.html`).
-2. Wejdź w zakładkę **Podgląd**. Strona pokaże się w ramce.
-3. Zmień coś w pliku (w zakładce Pliki albo w swoim edytorze, jeśli projekt jest wskazany ścieżką):
-   podgląd odświeży się sam po około sekundzie.
+1. Open a project that has `.html` files (ideally `index.html`).
+2. Go to the **Preview** tab. The page shows up in a frame.
+3. Change something in a file (in the Files tab or in your own editor, if the project is pointed to by a path):
+   the preview refreshes itself after about a second.
 
-## Opcje
+## Options
 
-- **Lista plików**: wybierz inną stronę HTML z projektu.
-- **Pełna / Tablet / Telefon**: sprawdź, jak strona wygląda w różnych szerokościach.
-- **Odświeżaj na żywo**: wyłącz, jeśli nie chcesz automatycznego przeładowania.
-- **Nowa karta**: ta sama strona w osobnej karcie przeglądarki.
+- **File list**: pick a different HTML page from the project.
+- **Full / Tablet / Phone**: check how the page looks at different widths.
+- **Live refresh**: turn it off if you don't want automatic reloads.
+- **New tab**: the same page in a separate browser tab.
 
-## Bezpieczeństwo
+## Security
 
-Strona działa w izolowanej ramce (sandbox): jej skrypty nie mają dostępu do Twojego konta ani do API ProjectHub.
-Adres podglądu wygasa po kilku godzinach, więc nie da się go używać jako trwałego linku.
-Względne ścieżki (`css/style.css`, `img/logo.png`) działają tak samo jak na zwykłym serwerze.
+The page runs in an isolated frame (sandbox): its scripts can't reach your account or ProjectHub's API.
+The preview address expires after a few hours, so it can't be used as a permanent link.
+Relative paths (`css/style.css`, `img/logo.png`) work just like on an ordinary server.
 
 > [!NOTE]
-> To podgląd do pracy, nie hosting. Żeby opublikować stronę dla innych, wrzuć pliki na prawdziwy hosting.
+> This is a preview for working, not hosting. To publish a page for others, upload the files to real hosting.
 """),
 
-    ("motywy", "Motywy i wygląd", """# Motywy i wygląd
+    ("motywy", "Themes and looks", """# Themes and looks
 
-**Ustawienia → Wygląd i nawigacja → Motyw strony** zmienia kolory całej aplikacji:
+**Settings → Appearance and navigation → Site theme** changes the colors of the whole app:
 
-| Motyw | Charakter |
+| Theme | Character |
 |---|---|
-| Noc | ciemny fiolet (domyślny) |
-| Grafit | neutralna szarość |
-| Ocean | granat i błękit |
-| Las | ciemna zieleń |
-| Zmierzch | ciemna śliwka |
-| Jasny | jasny tryb |
-| Papier | ciepły, kremowy jasny tryb |
-| Jak system | przełącza się razem z ustawieniem urządzenia |
+| Night | dark purple (default) |
+| Graphite | neutral gray |
+| Ocean | navy and blue |
+| Forest | dark green |
+| Dusk | dark plum |
+| Light | light mode |
+| Paper | warm, creamy light mode |
+| Follow system | switches together with the device's setting |
 
-Dodatkowo wybierzesz **kolor akcentu** (przyciski i zaznaczenia), także własny z palety kolorów.
-Każdemu projektowi możesz nadać **ikonę (emoji) i kolor** w oknie edycji, a wtedy teczka i zakładka mają ten kolor.
+You can also pick an **accent color** (buttons and selections), including a custom one from the color picker.
+For every project you can set an **icon (emoji) and color** in the edit window, and then the folder and tab take on that color.
 
-Wygląd jest zapamiętywany w przeglądarce (na tym urządzeniu).
+The look is remembered in the browser (on this device).
 """),
 
-    ("konta", "Konta i hosting", """# Konta i hosting
+    ("konta", "Accounts and hosting", """# Accounts and hosting
 
-## Konta
+## Accounts
 
-Każde konto ma własne projekty, pliki, dokumentację i backupy. Nikt nie widzi cudzych danych.
-W **Ustawieniach → Konto** zmienisz hasło, zobaczysz zajęte miejsce albo usuniesz konto
-(razem z projektami i wgranymi plikami, po potwierdzeniu hasłem).
+Every account has its own projects, files, documentation and backups. Nobody sees anyone else's data.
+In **Settings → Account** you can change your password, see how much space you use, or delete the account
+(along with its projects and uploaded files, after confirming with your password).
 
-## Dwa tryby działania
+## Two ways to run
 
-| | Aplikacja na komputerze | Serwer (hosting) |
+| | Desktop app | Server (hosting) |
 |---|---|---|
-| Kto korzysta | Ty | wiele osób, każda na swoim koncie |
-| Ścieżki do folderów, skanowanie, uruchamianie poleceń | tak | nie (zablokowane ze względów bezpieczeństwa) |
-| Wgrywanie plików, edycja, podgląd, backup ZIP | tak | tak |
-| Limit miejsca na konto | opcjonalnie | domyślnie 500 MB |
+| Who uses it | you | many people, each on their own account |
+| Folder paths, scanning, running commands | yes | no (blocked for security) |
+| Uploading files, editing, preview, ZIP backup | yes | yes |
+| Storage limit per account | optional | 500 MB by default |
 
-## Własny serwer
+## Your own server
 
-Najprościej przez Dockera: `docker compose up -d`, potem otwórz adres serwera.
-Zmienne środowiskowe (`PROJECTHUB_REGISTRATION=closed`, `PROJECTHUB_QUOTA_MB`, `PROJECTHUB_ALLOWED_HOSTS`)
-opisuje plik README. Do publicznego dostępu używaj HTTPS (w repozytorium jest gotowy plik Caddyfile).
+Easiest through Docker: `docker compose up -d`, then open the server address.
+The environment variables (`PROJECTHUB_REGISTRATION=closed`, `PROJECTHUB_QUOTA_MB`, `PROJECTHUB_ALLOWED_HOSTS`)
+are described in the README. For public access use HTTPS (there's a ready Caddyfile in the repository).
 
 > [!IMPORTANT]
-> Na serwerze zawsze włącz HTTPS i rozważ zamknięcie rejestracji, jeśli to ma być prywatna instancja.
+> On a server, always enable HTTPS and consider closing registration if it's meant to be a private instance.
 """),
 
     ("backup", "Backup", """# Backup
 
-Backup to plik ZIP z **plikami projektu i całą dokumentacją**: opisem, notatkami, zadaniami, stronami dokumentacji,
-poleceniami i zdjęciami.
+A backup is a ZIP file with **the project's files and all of its documentation**: description, notes, tasks, documentation pages,
+commands and images.
 
-## Co jest w środku
+## What's inside
 
 ~~~text
-moj-projekt-2026-11-07.zip
-  index.html, src/, ...            ← pliki projektu
+my-project-2026-11-07.zip
+  index.html, src/, ...            ← project files
   PROJECTHUB-INFO/
-    projekt.json                   ← wszystko do odtworzenia projektu
-    README.md                      ← opis, notatki i zadania do czytania
-    dokumentacja/01-start.md ...   ← strony dokumentacji jako Markdown
-    zdjecia/                       ← galeria
+    projekt.json                   ← everything needed to restore the project
+    README.md                      ← description, notes and tasks to read
+    dokumentacja/01-start.md ...   ← documentation pages as Markdown
+    zdjecia/                       ← the gallery
 ~~~
 
-Jeśli wgrasz taki ZIP do nowego projektu (z zaznaczonym odtworzeniem), dostaniesz projekt z powrotem razem z opisami.
+If you upload such a ZIP into a new project (with restore checked), you get the project back together with its descriptions.
 
-## Jak zrobić
+## How to do it
 
-- **Aplikacja na komputerze**: wpisz folder docelowy, na przykład `E:\\Backupy`, zaznacz projekty i kliknij **Zapisz do folderu**.
-  Każdy projekt trafia do osobnego pliku z datą w nazwie. Możesz też kliknąć **Pobierz ZIP**.
-- **Serwer**: kliknij **Pobierz ZIP**. Jeden projekt to jeden plik, kilka projektów to jedno archiwum.
-- Pojedynczy projekt pobierzesz też z menu „⋯” → **Pobierz ZIP**.
+- **Desktop app**: type the destination folder, for example `E:\\Backups`, tick the projects and click **Save to folder**.
+  Each project goes into its own file with the date in the name. You can also click **Download ZIP**.
+- **Server**: click **Download ZIP**. One project is one file, several projects are one archive.
+- A single project can also be downloaded from the “⋯” menu → **Download ZIP**.
 
-Jeśli taki plik już jest, dodam numer na końcu, więc nic się nie nadpisze.
+If such a file already exists, I add a number at the end, so nothing gets overwritten.
 
-## Co pomijam
+## What I skip
 
-Domyślnie nie pakuję ciężkich folderów, które da się odtworzyć:
-`node_modules`, `.venv`, `__pycache__`. Listę zmienisz w Ustawieniach.
-To zwykle zmniejsza archiwum wiele razy.
+By default I don't pack heavy folders that can be regenerated:
+`node_modules`, `.venv`, `__pycache__`. You can change the list in Settings.
+That usually shrinks the archive many times over.
 
-## Przypomnienia
+## Reminders
 
-- Kafelek pokazuje, kiedy był ostatni backup: zielony gdy świeży, żółty po upływie ustawionej liczby dni (domyślnie 14), czerwony gdy nigdy.
-- Po ilu dniach kolor robi się żółty, ustawisz w Ustawieniach.
-- Przycisk „bez backupu” w bibliotece filtruje projekty, które nigdy nie były pakowane.
+- The tile shows when the last backup was: green when fresh, yellow after the set number of days (14 by default), red when never.
+- After how many days the color turns yellow is set in Settings.
+- The “no backup” button in the library filters projects that were never backed up.
 
 > [!TIP]
-> Dobra zasada 3-2-1: trzy kopie, na dwóch różnych nośnikach, jedna poza domem.
+> The good 3-2-1 rule: three copies, on two different kinds of media, one kept outside your home.
 """),
 
-    ("ustawienia", "Ustawienia", """# Ustawienia
+    ("ustawienia", "Settings", """# Settings
 
-Zmiany zapisują się od razu.
+Changes are saved immediately.
 
-## Wygląd i nawigacja
+## Appearance and navigation
 
-- **Położenie nawigacji:** na górze albo z boku.
-- **Kolor akcentu:** bursztyn, mięta, róż, niebo, fiolet.
-- **Rozmiar teczek:** małe, średnie, duże.
+- **Navigation position:** at the top or on the side.
+- **Accent color:** amber, mint, rose, sky, violet.
+- **Tile size:** small, medium, large.
 
-## Animacje
+## Animations
 
-- **Pełne, Ograniczone, Wyłączone.** Respektuję też ustawienie systemu „ogranicz ruch”.
-- **Przechylanie teczek** za kursorem.
+- **Full, Limited, Disabled.** I also respect the system's “reduce motion” setting.
+- **Tile tilting** following the cursor.
 
-## Biblioteka
+## Library
 
-Domyślne sortowanie, ulubione na górze, rozmiar w kafelku, domyślna zakładka na stronie projektu,
-potwierdzanie przed usunięciem.
+Default sorting, favorites on top, size on the tile, the default tab on the project page,
+confirming before deleting.
 
 ## Backup
 
-Domyślny folder docelowy, pomijane foldery i liczba dni do przypomnienia.
+Default destination folder, skipped folders and the number of days before a reminder.
 
-## Bezpieczeństwo
+## Security
 
-Automatyczne wylogowanie po bezczynności (w minutach).
+Automatic logout after being idle (in minutes).
 
-## Dane
+## Data
 
-- **Eksport JSON** wszystkich projektów (opisy, notatki, dokumentacja, zadania).
-- **Import JSON** (projekty o tym samym identyfikatorze zostaną zaktualizowane).
-- **Przelicz rozmiary** folderów.
+- **JSON export** of all projects (descriptions, notes, documentation, tasks).
+- **JSON import** (projects with the same id will be updated).
+- **Recalculate** folder sizes.
 
 > [!NOTE]
-> Preferencje wyglądu są zapamiętywane w przeglądarce. Projekty i dokumentacja są w bazie na dysku.
+> Appearance preferences are remembered in the browser. Projects and documentation live in the database on disk.
 """),
 
-    ("bezpieczenstwo", "Bezpieczeństwo i dane", """# Bezpieczeństwo i dane
+    ("bezpieczenstwo", "Security and data", """# Security and data
 
-## Co jest gdzie
+## What lives where
 
-| Co | Gdzie |
+| What | Where |
 |---|---|
-| Baza (konto, projekty, notatki) | `data/projecthub.db` |
-| Zdjęcia z galerii | `data/uploads/` |
-| Pliki projektów wgranych do ProjectHub | `data/workspaces/<konto>/<projekt>/` |
+| Database (account, projects, notes) | `data/projecthub.db` |
+| Images from the gallery | `data/uploads/` |
+| Files of projects uploaded to ProjectHub | `data/workspaces/<account>/<project>/` |
 
-## Zasady
+## The rules
 
-- Aplikacja na komputerze słucha **wyłącznie** na `127.0.0.1`. Tryb serwera słucha w sieci, ale wyłącza funkcje dotykające dysku serwera (ścieżki, uruchamianie poleceń).
-- Hasło jest przechowywane jako **hasz** (scrypt z unikalną solą). Nikt, łącznie ze mną, go nie odczyta.
-- Sesja to losowy token w ciasteczku `HttpOnly`, a zapisy są chronione tokenem CSRF.
-- Po kilku błędnych logowaniach serwer na chwilę blokuje kolejne próby.
-- Uruchamiane są wyłącznie polecenia zapisane w bazie.
-- Przeglądarka plików nie wyjdzie poza folder projektu, a rozpakowywanie ZIP chroni przed ucieczką ze ścieżki (zip-slip) i bombami.
-- Podgląd strony działa w izolowanej ramce bez dostępu do konta.
-- Każde konto widzi tylko swoje dane.
-- Usunięcie projektu usuwa tylko wpis w bazie, nigdy plików z dysku.
+- The desktop app listens **only** on `127.0.0.1`. Server mode listens on the network, but disables features that touch the server's disk (paths, running commands).
+- The password is stored as a **hash** (scrypt with a unique salt). Nobody, including me, can read it.
+- A session is a random token in an `HttpOnly` cookie, and writes are protected by a CSRF token.
+- After several failed logins the server briefly blocks further attempts.
+- Only commands saved in the database are ever run.
+- The file browser won't leave the project folder, and ZIP unpacking is protected against path escapes (zip-slip) and bombs.
+- The page preview runs in an isolated frame with no access to your account.
+- Every account sees only its own data.
+- Deleting a project removes only the database entry, never the files on disk.
 
-## Zrób kopię danych ProjectHub
+## Back up ProjectHub's data
 
-Skopiuj cały folder `data/`. Zawiera wszystko oprócz samych projektów, które backupujesz osobno przyciskiem **Backup**.
+Copy the whole `data/` folder. It contains everything except the projects themselves, which you back up separately with the **Backup** button.
 
-## Zapomniane hasło
+## Forgotten password
 
-Hasła nie da się odczytać. Jeśli je zgubisz, zatrzymaj serwer, przenieś `data/projecthub.db` w bezpieczne miejsce
-i uruchom aplikację ponownie: dostaniesz czyste konto z nowym przewodnikiem.
-Starą bazę możesz później zachować jako kopię.
+A password can't be read back. If you lose it, stop the server, move `data/projecthub.db` somewhere safe
+and start the app again: you'll get a fresh account with a new guide.
+You can keep the old database later as a copy.
 """),
 ]

@@ -1,4 +1,4 @@
-/* lib.js: wspólne narzędzia: ustawienia, ikony, dane projektów, okna, menu, animacje. */
+/* lib.js: shared utilities: settings, icons, project data, dialogs, menus, animations. */
 (function () {
   'use strict';
   const PH = (window.PH = window.PH || {});
@@ -13,7 +13,7 @@
   const uid = () => Math.random().toString(36).slice(2, 10);
   Object.assign(PH, { $, $$, esc, plural, norm, uid });
 
-  /* ---------- ikony ---------- */
+  /* ---------- icons ---------- */
 
   const ICONS = {
     grid: '<rect x="3" y="3" width="7" height="7" rx="1.6"/><rect x="14" y="3" width="7" height="7" rx="1.6"/><rect x="3" y="14" width="7" height="7" rx="1.6"/><rect x="14" y="14" width="7" height="7" rx="1.6"/>',
@@ -50,21 +50,21 @@
     upload: '<path d="M12 16V5m0 0-4 4m4-4 4 4M5 19h14"/>'
   };
   PH.icon = (name, cls) => '<svg class="ico' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[name] || '') + '</svg>';
-  /* podstawia ikony w statycznym HTML: <span class="ico-slot" data-icon="plus"></span> */
+  /* swaps icons into static HTML: <span class="ico-slot" data-icon="plus"></span> */
   PH.fillIcons = function (root) {
     $$('.ico-slot[data-icon]', root || document).forEach(s => { s.outerHTML = PH.icon(s.dataset.icon); });
   };
 
-  /* ---------- ustawienia ---------- */
+  /* ---------- settings ---------- */
 
   const SKEY = 'ph_settings';
   let reduced = false;
-  try { reduced = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { /* j.w. */ }
+  try { reduced = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { /* same as above */ }
   const DEFAULTS = {
     theme: 'night', accentCustom: '#FFB65C', nav: 'top', accent: 'amber', density: 'normal', motion: reduced ? 'low' : 'full', tilt: true,
     sort: 'manual', importMode: 'path', favTop: true, showSize: true, tabDefault: 'przeglad', confirmDelete: true,
     backupDest: '', backupExclude: ['node_modules', '.venv', '__pycache__'], backupWarnDays: 14,
-    autoLogout: 0, notesMode: 'split'
+    autoLogout: 0, notesMode: 'split', language: 'en'
   };
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(SKEY) || '{}') || {}; } catch (e) { saved = {}; }
@@ -75,7 +75,7 @@
   PH.mode = 'demo';
   try {
     matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => { if (PH.settings.theme === 'auto') PH.applySettings(); });
-  } catch (e) { /* stare przeglądarki */ }
+  } catch (e) { /* old browsers */ }
 
   PH.applySettings = function () {
     const d = document.documentElement, s = PH.settings;
@@ -85,7 +85,7 @@
     let theme = s.theme;
     if (theme === 'auto') {
       let light = false;
-      try { light = matchMedia('(prefers-color-scheme: light)').matches; } catch (e) { /* j.w. */ }
+      try { light = matchMedia('(prefers-color-scheme: light)').matches; } catch (e) { /* same as above */ }
       theme = light ? 'light' : 'night';
     }
     d.dataset.theme = theme;
@@ -98,34 +98,34 @@
     }
     d.style.setProperty('--card-min', { compact: '236px', normal: '300px', roomy: '380px' }[s.density] || '300px');
   };
-  /* ustawienia są też zapisywane na serwerze (przy koncie), żeby nie ginęły przy zmianie portu, przeglądarki czy okna */
+  /* settings are also saved on the server (per account) so they survive a port, browser or window change */
   let pushTimer = null;
   function pushSettings() {
     clearTimeout(pushTimer);
-    pushTimer = setTimeout(() => { try { PH.api.saveSettings(PH.settings).catch(() => {}); } catch (e) { /* tryb demo */ } }, 500);
+    pushTimer = setTimeout(() => { try { PH.api.saveSettings(PH.settings).catch(() => {}); } catch (e) { /* demo mode */ } }, 500);
   }
   PH.loadServerSettings = async function () {
     try {
       const r = await PH.api.getSettings();
       if (r && r.settings) {
         PH.settings = Object.assign({}, DEFAULTS, r.settings);
-        try { localStorage.setItem(SKEY, JSON.stringify(PH.settings)); } catch (e) { /* j.w. */ }
+        try { localStorage.setItem(SKEY, JSON.stringify(PH.settings)); } catch (e) { /* same as above */ }
         PH.applySettings();
       } else if (Object.keys(saved).length) {
-        pushSettings();                      // pierwszy raz: wyślij to, co było zapisane w przeglądarce
+        pushSettings();                      // first time: send what was saved in the browser
       }
-    } catch (e) { /* brak serwera: zostają ustawienia z przeglądarki */ }
+    } catch (e) { /* no server: keep the browser settings */ }
   };
   PH.setSetting = function (k, v) {
     PH.settings[k] = v;
-    try { localStorage.setItem(SKEY, JSON.stringify(PH.settings)); } catch (e) { /* j.w. */ }
+    try { localStorage.setItem(SKEY, JSON.stringify(PH.settings)); } catch (e) { /* same as above */ }
     pushSettings();
     PH.applySettings();
     document.dispatchEvent(new CustomEvent('ph:settings', { detail: { key: k } }));
   };
   PH.resetSettings = function () {
     PH.settings = Object.assign({}, DEFAULTS);
-    try { localStorage.removeItem(SKEY); } catch (e) { /* j.w. */ }
+    try { localStorage.removeItem(SKEY); } catch (e) { /* same as above */ }
     pushSettings();
     PH.applySettings();
     document.dispatchEvent(new CustomEvent('ph:settings', { detail: { key: '*' } }));
@@ -134,39 +134,39 @@
   PH.anim = () => PH.settings.motion !== 'off';
   PH.applySettings();
 
-  /* ---------- stałe i formatowanie ---------- */
+  /* ---------- constants and formatting ---------- */
 
   PH.STATUS = {
-    idea: { label: 'Pomysł', c: 'var(--c4)' },
-    active: { label: 'W toku', c: 'var(--c6)' },
-    paused: { label: 'Wstrzymany', c: 'var(--c5)' },
-    done: { label: 'Skończony', c: 'var(--c3)' }
+    idea: { label: 'Idea', c: 'var(--c4)' },
+    active: { label: 'In progress', c: 'var(--c6)' },
+    paused: { label: 'Paused', c: 'var(--c5)' },
+    done: { label: 'Done', c: 'var(--c3)' }
   };
   PH.STATUS_ORDER = ['idea', 'active', 'paused', 'done'];
-  PH.TASK = { todo: 'Do zrobienia', doing: 'W toku', done: 'Zrobione' };
+  PH.TASK = { todo: 'To do', doing: 'In progress', done: 'Done' };
   PH.TASK_ORDER = ['todo', 'doing', 'done'];
 
   let catColors = {};
   try { catColors = JSON.parse(localStorage.getItem('ph_catcolors') || '{}') || {}; } catch (e) { catColors = {}; }
   PH.tabVar = function (name) {
-    const key = String(name || 'Inne');
+    const key = String(name || 'Other');
     if (!(key in catColors)) {
       const used = Object.values(catColors);
       let i = 0;
       while (i < 8 && used.indexOf(i) >= 0) i++;
       catColors[key] = i < 8 ? i : used.length % 8;
-      try { localStorage.setItem('ph_catcolors', JSON.stringify(catColors)); } catch (e) { /* j.w. */ }
+      try { localStorage.setItem('ph_catcolors', JSON.stringify(catColors)); } catch (e) { /* same as above */ }
     }
     return 'var(--c' + catColors[key] + ')';
   };
 
-  /* Kolor i ikona projektu: własne, a gdy ich brak, kolor kategorii i inicjały. */
+  /* Project color and icon: custom ones, falling back to the category color and initials. */
   PH.tabStyle = function (p) {
     if (p && /^#[0-9a-f]{6}$/i.test(p.color || '')) {
       const n = parseInt(p.color.slice(1), 16), lum = 0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255);
       return '--tab:' + p.color + ';--on-tab:' + (lum > 150 ? '#14112A' : '#FFFFFF');
     }
-    return '--tab:' + PH.tabVar(p ? p.category : 'Inne');
+    return '--tab:' + PH.tabVar(p ? p.category : 'Other');
   };
   PH.glyph = function (p) { return p && p.icon ? p.icon : PH.initials(p ? p.name : '?'); };
 
@@ -182,24 +182,24 @@
     const u = ['B', 'KB', 'MB', 'GB', 'TB'];
     let v = bytes, i = 0;
     while (v >= 1024 && i < u.length - 1) { v /= 1024; i++; }
-    return v.toLocaleString('pl-PL', { maximumFractionDigits: v >= 100 || i === 0 ? 0 : 1 }) + ' ' + u[i];
+    return v.toLocaleString('en-US', { maximumFractionDigits: v >= 100 || i === 0 ? 0 : 1 }) + ' ' + u[i];
   };
-  PH.fmtDate = iso => new Date(iso).toLocaleDateString('pl-PL', { day: 'numeric', month: 'long', year: 'numeric' });
+  PH.fmtDate = iso => new Date(iso).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
   PH.daysAgo = iso => iso ? Math.floor((Date.now() - new Date(iso).getTime()) / 864e5) : null;
   PH.ago = function (iso) {
     const d = PH.daysAgo(iso);
     if (d === null) return '';
-    if (d <= 0) return 'dzisiaj';
-    if (d === 1) return 'wczoraj';
-    if (d < 31) return d + ' dni temu';
+    if (d <= 0) return 'today';
+    if (d === 1) return 'yesterday';
+    if (d < 31) return d + ' days ago';
     const m = Math.floor(d / 30);
-    return m < 12 ? m + ' ' + plural(m, 'miesiąc', 'miesiące', 'miesięcy') + ' temu' : 'ponad rok temu';
+    return m < 12 ? m + ' ' + plural(m, 'month', 'months', 'months') + ' ago' : 'over a year ago';
   };
   PH.backupInfo = function (p) {
     const d = PH.daysAgo(p.backedUpAt);
-    if (d === null) return { cls: 'none', text: 'bez backupu' };
-    if (d <= 0) return { cls: 'ok', text: 'backup dzisiaj' };
-    return { cls: d <= PH.settings.backupWarnDays ? 'ok' : 'old', text: d === 1 ? 'backup wczoraj' : 'backup ' + d + ' dni temu' };
+    if (d === null) return { cls: 'none', text: 'no backup' };
+    if (d <= 0) return { cls: 'ok', text: 'backed up today' };
+    return { cls: d <= PH.settings.backupWarnDays ? 'ok' : 'old', text: d === 1 ? 'backed up yesterday' : 'backup ' + d + ' days ago' };
   };
   PH.shortPath = function (p) {
     const parts = p.split(/[\\/]+/).filter(Boolean);
@@ -208,7 +208,7 @@
   PH.cleanPath = s => s.trim().replace(/^["']+|["']+$/g, '').trim();
   PH.normPath = s => s.trim().replace(/\//g, '\\').replace(/\\+$/, '').toLowerCase();
 
-  /* ---------- dane projektów ---------- */
+  /* ---------- project data ---------- */
 
   PH.state = {
     projects: [], query: '', category: null, techs: new Set(), statuses: new Set(), noBackup: false, firstPaint: true
@@ -217,7 +217,7 @@
 
   PH.normProject = function (p) {
     const o = Object.assign({
-      description: '', notes: '', category: 'Inne', tech: [], tags: [], images: [], commands: [], tasks: [], docs: [],
+      description: '', notes: '', category: 'Other', tech: [], tags: [], images: [], commands: [], tasks: [], docs: [],
       favorite: false, archived: false, status: 'active', sizeBytes: null, backedUpAt: null
     }, p);
     ['tech', 'tags', 'images', 'commands', 'tasks', 'docs'].forEach(k => { if (!Array.isArray(o[k])) o[k] = []; });
@@ -234,7 +234,7 @@
   PH.patch = async function (id, fields, opts) {
     opts = opts || {};
     const cur = PH.find(id);
-    if (!cur) throw new Error('Nie znaleziono projektu.');
+    if (!cur) throw new Error('Project not found.');
     const prev = {};
     if (opts.optimistic) {
       Object.keys(fields).forEach(k => { prev[k] = cur[k]; });
@@ -248,7 +248,7 @@
       throw err;
     }
   };
-  /* wołane po każdej zmianie danych: odświeża aktywny widok i nawigację */
+  /* called after every data change: refreshes the active view and navigation */
   PH.dataChanged = function () {
     if (PH.updateNav) PH.updateNav();
     if (PH.viewRefresh) PH.viewRefresh();
@@ -256,16 +256,16 @@
   PH.onLeaveFns = [];
   PH.onLeave = fn => { PH.onLeaveFns.push(fn); };
 
-  /* ---------- komunikaty ---------- */
+  /* ---------- messages ---------- */
 
   let toastTimer;
   PH.toast = function (msg, kind) {
     const t = $('#toast');
     t.textContent = msg;
     t.classList.toggle('error', kind === 'error');
-    try { if (!t.matches(':popover-open')) t.showPopover(); } catch (e) { /* stara przeglądarka */ }
+    try { if (!t.matches(':popover-open')) t.showPopover(); } catch (e) { /* old browser */ }
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => { try { t.hidePopover(); } catch (e) { /* j.w. */ } }, kind === 'error' ? 6500 : 3200);
+    toastTimer = setTimeout(() => { try { t.hidePopover(); } catch (e) { /* same as above */ } }, kind === 'error' ? 6500 : 3200);
   };
   PH.showErr = function (sel, msg) {
     const el = $(sel);
@@ -277,7 +277,7 @@
     btn.disabled = true;
     btn.textContent = label;
     try { return await fn(); }
-    catch (err) { PH.toast(err.message || 'Coś poszło nie tak.', 'error'); }
+    catch (err) { PH.toast(err.message || 'Something went wrong.', 'error'); }
     finally { if (btn.isConnected) { btn.disabled = false; btn.innerHTML = old; } }
   };
 
@@ -300,7 +300,7 @@
       const d = $('#promptDlg'), input = $('#promptInput');
       $('#promptTitle').textContent = title;
       $('#promptLabel').textContent = label;
-      $('#promptOk').textContent = okLabel || 'Zapisz';
+      $('#promptOk').textContent = okLabel || 'Save';
       input.type = secret ? 'password' : 'text';
       input.autocomplete = secret ? 'current-password' : 'off';
       input.value = value || '';
@@ -312,7 +312,7 @@
     });
   };
 
-  /* ---------- menu kontekstowe ---------- */
+  /* ---------- context menu ---------- */
 
   let openMenuEl = null, menuOff = null;
   PH.closeMenu = function () {
@@ -360,14 +360,14 @@
     menuOff = () => { document.removeEventListener('pointerdown', onDown, true); document.removeEventListener('keydown', onKey, true); };
   };
 
-  /* ---------- tagi (pole z żetonami) ---------- */
+  /* ---------- tags (chip field) ---------- */
 
   PH.makeTags = function (root, onChange) {
     const list = $('.tag-list', root), input = $('input', root);
     let items = [];
     const paint = () => {
       list.innerHTML = items.map((t, i) =>
-        '<li><span>' + esc(t) + '</span><button type="button" data-rm="' + i + '" aria-label="Usuń ' + esc(t) + '">×</button></li>').join('');
+        '<li><span>' + esc(t) + '</span><button type="button" data-rm="' + i + '" aria-label="Remove ' + esc(t) + '">×</button></li>').join('');
     };
     const changed = () => { if (onChange) onChange(items.slice()); };
     const add = raw => {
@@ -394,12 +394,12 @@
     };
   };
 
-  /* ---------- animacje ---------- */
+  /* ---------- animations ---------- */
 
   const EASE = 'cubic-bezier(.2,.8,.2,1)';
   PH.EASE = EASE;
 
-  /* FLIP: zapamiętuje pozycje elementów, wykonuje zmianę i płynnie przesuwa je na nowe miejsca */
+  /* FLIP: remembers element positions, applies the change and smoothly moves them to their new spots */
   PH.flip = function (roots, mutate, sel, key) {
     sel = sel || '.tile';
     key = key || 'id';
@@ -465,7 +465,7 @@
     requestAnimationFrame(tick);
   };
 
-  /* przechylanie teczek za kursorem */
+  /* folders tilting toward the cursor */
   let lastTilt = null;
   const resetTilt = el => { if (el) { el.style.removeProperty('--rx'); el.style.removeProperty('--ry'); el.classList.remove('tilting'); } };
   document.addEventListener('pointermove', e => {
@@ -484,14 +484,14 @@
   });
   document.addEventListener('pointerleave', () => { resetTilt(lastTilt); lastTilt = null; }, true);
 
-  /* ---------- podgląd zdjęcia ---------- */
+  /* ---------- photo lightbox ---------- */
 
   const lb = { imgs: [], i: 0 };
   function showLb() {
     const im = lb.imgs[lb.i];
     $('#lbImg').src = im.url;
     $('#lbImg').alt = im.name;
-    $('#lbCap').textContent = im.name + ' (' + (lb.i + 1) + ' z ' + lb.imgs.length + ')';
+    $('#lbCap').textContent = im.name + ' (' + (lb.i + 1) + ' of ' + lb.imgs.length + ')';
     $$('[data-lb="prev"], [data-lb="next"]').forEach(b => { b.hidden = lb.imgs.length < 2; });
   }
   function stepLb(dir) {
@@ -517,7 +517,7 @@
     if (e.key === 'ArrowLeft') stepLb(-1);
   });
 
-  /* zamykanie okien: przycisk, tło */
+  /* closing dialogs: button, backdrop */
   $$('dialog').forEach(d => {
     d.addEventListener('click', e => {
       if (e.target === d && d.id !== 'confirmDlg' && d.id !== 'promptDlg' && d.id !== 'lightbox') d.close();
@@ -525,7 +525,7 @@
     });
   });
 
-  /* kopiowanie bloków kodu w treściach Markdown */
+  /* copying code blocks in Markdown content */
   document.addEventListener('click', async e => {
     const b = e.target.closest('[data-copy]');
     if (!b) return;
@@ -533,14 +533,14 @@
     if (!code) return;
     try {
       await navigator.clipboard.writeText(code.textContent);
-      b.textContent = 'Skopiowano';
-      setTimeout(() => { b.textContent = 'Kopiuj'; }, 1400);
-    } catch (err) { PH.toast('Nie udało się skopiować. Zaznacz kod i skopiuj go ręcznie.', 'error'); }
+      b.textContent = 'Copied';
+      setTimeout(() => { b.textContent = 'Copy'; }, 1400);
+    } catch (err) { PH.toast('Could not copy. Select the code and copy it manually.', 'error'); }
   });
 
   PH.copy = async function (text, okMsg) {
-    try { await navigator.clipboard.writeText(text); PH.toast(okMsg || 'Skopiowano'); }
-    catch (err) { PH.toast('Nie udało się skopiować. Zaznacz tekst i skopiuj go ręcznie.', 'error'); }
+    try { await navigator.clipboard.writeText(text); PH.toast(okMsg || 'Copied'); }
+    catch (err) { PH.toast('Could not copy. Select the text and copy it manually.', 'error'); }
   };
 
   PH.debounce = function (fn, ms) {

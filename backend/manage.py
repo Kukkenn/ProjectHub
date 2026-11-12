@@ -1,4 +1,4 @@
-"""Zarządzanie kontami z wiersza poleceń (np. gdy rejestracja jest zamknięta).
+"""Account management from the command line (e.g. when registration is closed).
 
   python manage.py list
   python manage.py create-user jan
@@ -15,14 +15,14 @@ import db
 def find(name):
     u = db.one("SELECT * FROM users WHERE username = ?", (name,))
     if not u:
-        sys.exit("Nie ma takiego konta: %s" % name)
+        sys.exit("No such account: %s" % name)
     return u
 
 
 def ask_password():
-    p1 = getpass.getpass("Hasło (min. 8 znaków): ")
-    if p1 != getpass.getpass("Powtórz hasło: "):
-        sys.exit("Hasła nie są takie same.")
+    p1 = getpass.getpass("Password (min. 8 characters): ")
+    if p1 != getpass.getpass("Repeat password: "):
+        sys.exit("The passwords don't match.")
     return p1
 
 
@@ -34,19 +34,19 @@ def main(argv):
         if cmd == "list":
             for u in db.query("SELECT u.username, u.created_at, (SELECT COUNT(*) FROM projects p WHERE p.user_id = u.id) AS n"
                               " FROM users u ORDER BY u.id"):
-                print("%-30s %s  projektów: %d" % (u["username"], u["created_at"], u["n"]))
+                print("%-30s %s  projects: %d" % (u["username"], u["created_at"], u["n"]))
         elif cmd == "create-user" and len(argv) == 2:
             accounts.create_user(argv[1], ask_password())
-            print("Utworzono konto %s (z projektem-przewodnikiem)." % argv[1])
+            print("Created account %s (with the guide project)." % argv[1])
         elif cmd == "set-password" and len(argv) == 2:
             accounts.set_password(find(argv[1])["id"], ask_password())
             db.run("DELETE FROM sessions WHERE user_id = ?", (find(argv[1])["id"],))
-            print("Hasło zmienione, użytkownik został wylogowany.")
+            print("Password changed, the user has been logged out.")
         elif cmd == "delete-user" and len(argv) == 2:
             u = find(argv[1])
-            if input("Usunąć konto %s razem z jego projektami i plikami? Wpisz TAK: " % u["username"]) == "TAK":
+            if input("Delete account %s along with its projects and files? Type YES: " % u["username"]) == "YES":
                 accounts.delete_user(u["id"])
-                print("Usunięto.")
+                print("Deleted.")
         else:
             sys.exit(__doc__)
     except accounts.AccountError as e:

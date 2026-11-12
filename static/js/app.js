@@ -1,4 +1,4 @@
-/* app.js: router (hash), nawigacja główna, wyszukiwarka, wylogowanie i start aplikacji. */
+/* app.js: hash router, main navigation, search, logging out and app start. */
 (function () {
   'use strict';
   const PH = window.PH;
@@ -7,8 +7,8 @@
   const api = PH.api;
   PH.view = $('#view');
 
-  const NAV = [['library', 'Biblioteka', 'grid', '#/'], ['tasks', 'Zadania', 'tasks', '#/zadania'], ['archive', 'Archiwum', 'archive', '#/archiwum'], ['settings', 'Ustawienia', 'sliders', '#/ustawienia']];
-  const TITLES = { library: 'ProjectHub', tasks: 'Zadania · ProjectHub', archive: 'Archiwum · ProjectHub', settings: 'Ustawienia · ProjectHub' };
+  const NAV = [['library', 'Library', 'grid', '#/'], ['tasks', 'Tasks', 'tasks', '#/zadania'], ['archive', 'Archive', 'archive', '#/archiwum'], ['settings', 'Settings', 'sliders', '#/ustawienia']];
+  const TITLES = { library: 'ProjectHub', tasks: 'Tasks · ProjectHub', archive: 'Archive · ProjectHub', settings: 'Settings · ProjectHub' };
 
   /* ---------- router ---------- */
 
@@ -18,7 +18,7 @@
     if (parts[0] === 'zadania') return { name: 'tasks' };
     if (parts[0] === 'archiwum') return { name: 'archive' };
     if (parts[0] === 'ustawienia') return { name: 'settings' };
-    if (parts[0] === 'projekt' && parts[1]) return { name: 'project', id: parts[1], tab: parts[2] };
+    if (parts[0] === 'project' && parts[1]) return { name: 'project', id: parts[1], tab: parts[2] };
     return { name: 'library' };
   }
 
@@ -54,7 +54,7 @@
   }
   window.addEventListener('hashchange', render);
 
-  /* ---------- nawigacja główna ---------- */
+  /* ---------- main navigation ---------- */
 
   let navCache = '';
   PH.updateNav = function () {
@@ -71,7 +71,7 @@
     if (html !== navCache) { navCache = html; $('#topNav').innerHTML = html; $('#sideNav').innerHTML = html; }
   };
 
-  /* ---------- góra: wyszukiwarka i przyciski ---------- */
+  /* ---------- top: search and buttons ---------- */
 
   $('#q').addEventListener('input', e => {
     S.query = e.target.value;
@@ -91,11 +91,11 @@
   $('#btnScan').addEventListener('click', () => PH.openScan());
   $('#btnBackup').addEventListener('click', () => PH.openBackup());
   $('#btnLogout').addEventListener('click', async () => {
-    try { await api.logout(); } catch (err) { /* i tak wracamy do logowania */ }
+    try { await api.logout(); } catch (err) { /* we go back to the login page either way */ }
     location.href = 'login.html';
   });
 
-  /* ---------- automatyczne wylogowanie po bezczynności ---------- */
+  /* ---------- automatic log out after inactivity ---------- */
 
   let idleT = 0, lastArm = 0;
   function armIdle(force) {
@@ -106,7 +106,7 @@
     const m = PH.settings.autoLogout;
     if (!m) return;
     idleT = setTimeout(async () => {
-      try { await api.logout(); } catch (err) { /* j.w. */ }
+      try { await api.logout(); } catch (err) { /* same as above */ }
       location.href = 'login.html';
     }, m * 60000);
   }
@@ -120,7 +120,7 @@
     try {
       const st = await api.authStatus();
       if (!st.authenticated) { location.replace('login.html'); return; }
-      if (st.username) $('#logoutLbl').textContent = 'Wyloguj (' + st.username + ')';
+      if (st.username) $('#logoutLbl').textContent = 'Log out (' + st.username + ')';
       PH.features = Object.assign({}, PH.features, st.features || {});
       PH.limits = st.limits || PH.limits;
       PH.mode = st.mode || 'demo';
@@ -133,8 +133,8 @@
       armIdle(true);
       render();
     } catch (err) {
-      PH.view.innerHTML = '<div class="page"><div class="empty"><h2>Nie udało się wczytać katalogu</h2><p>' + esc(err.message || 'Nieznany błąd.') +
-        '</p><div class="empty-actions"><button class="btn btn-primary" type="button" id="btnRetry">Spróbuj ponownie</button></div></div></div>';
+      PH.view.innerHTML = '<div class="page"><div class="empty"><h2>Could not load the catalog</h2><p>' + esc(err.message || 'Unknown error.') +
+        '</p><div class="empty-actions"><button class="btn btn-primary" type="button" id="btnRetry">Try again</button></div></div></div>';
       $('#btnRetry').addEventListener('click', () => location.reload());
     }
   }

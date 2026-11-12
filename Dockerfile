@@ -1,4 +1,4 @@
-# ProjectHub w kontenerze (tryb serwera dla wielu kont).
+# ProjectHub in a container (server mode for multiple accounts).
 FROM python:3.12-slim
 ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 \
     PROJECTHUB_MODE=hosted PROJECTHUB_DATA=/data PROJECTHUB_PORT=8765

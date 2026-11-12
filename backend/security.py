@@ -1,4 +1,4 @@
-"""Hasła (scrypt), tokeny sesji i ograniczanie prób logowania."""
+"""Passwords (scrypt), session tokens and login throttling."""
 import base64
 import hashlib
 import hmac
@@ -28,7 +28,7 @@ def verify_password(password: str, stored: str) -> bool:
         return False
 
 
-# do wyrównania czasu, gdy login nie istnieje
+# fake hash — a nonexistent login should cost just as much time, no point giving a hint
 DUMMY_HASH = hash_password("nieistniejace-konto")
 
 
@@ -41,7 +41,7 @@ def token_hash(token: str) -> str:
 
 
 class Throttle:
-    """Po `limit` błędach w oknie `window` sekund blokuje kolejne próby."""
+    """After `limit` failures within a `window` of seconds, blocks further attempts."""
 
     def __init__(self, limit=5, window=300):
         self.limit, self.window = limit, window

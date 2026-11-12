@@ -1,5 +1,5 @@
-/* demo-data.js: dane przykładowe dla trybu podglądu (bez serwera).
-   Nie jest używany, gdy front rozmawia z prawdziwym backendem. */
+/* demo-data.js: sample data for preview mode (no server).
+   Not used when the front end talks to a real backend. */
 (function () {
   'use strict';
 
@@ -22,11 +22,11 @@
   }
   const img = (name, hue) => ({ id: uid(), name, url: shot(name, hue) });
 
-  /* ---------- projekty ---------- */
+  /* ---------- projects ---------- */
 
   function seed() {
     const P = o => Object.assign({
-      id: uid(), description: '', notes: '', category: 'Inne', tech: [], tags: [],
+      id: uid(), description: '', notes: '', category: 'Other', tech: [], tags: [],
       commands: [], tasks: [], docs: [], images: [], favorite: false, archived: false,
       status: 'active', sizeBytes: null, updatedAt: isoAgo(1), backedUpAt: null
     }, o);
@@ -35,20 +35,20 @@
     const D = (title, body) => ({ id: uid(), title, body });
 
     const docStart = L(
-      '# Szybki start',
+      '# Quick start',
       '',
-      'ProjectHub to lokalny katalog Twoich projektów. Ta strona pokazuje, jak wygląda dokumentacja zapisana wewnątrz projektu.',
+      'ProjectHub is a local catalog of your projects. This page shows what documentation stored inside a project looks like.',
       '',
       '> [!TIP]',
-      '> Dokumentację piszesz w Markdownie. Zmiany zapisują się same, a spis treści po prawej buduje się z nagłówków.',
+      '> You write documentation in Markdown. Changes save themselves, and the table of contents on the right is built from headings.',
       '',
-      '## Wymagania',
+      '## Requirements',
       '',
-      '- Python 3.11 lub nowszy',
-      '- Dysk z miejscem na kopie zapasowe',
-      '- Przeglądarka z obsługą elementu `<dialog>`',
+      '- Python 3.11 or newer',
+      '- A disk with room for backups',
+      '- A browser with `<dialog>` support',
       '',
-      '## Instalacja',
+      '## Installation',
       '',
       '~~~bash',
       'python -m venv .venv',
@@ -56,52 +56,52 @@
       'pip install -r requirements.txt',
       '~~~',
       '',
-      '## Pierwsze uruchomienie',
+      '## First run',
       '',
-      '1. Uruchom serwer poleceniem `python main.py`.',
-      '2. Otwórz adres `http://127.0.0.1:8000` w przeglądarce.',
-      '3. Załóż konto. Hasło zapisuje się wyłącznie jako hash.',
+      '1. Start the server with `python main.py`.',
+      '2. Open `http://127.0.0.1:8000` in the browser.',
+      '3. Create an account. The password is stored only as a hash.',
       '',
-      '## Najczęstsze polecenia',
+      '## Common commands',
       '',
-      '| Polecenie | Co robi |',
+      '| Command | What it does |',
       '|---|---|',
-      '| `python main.py` | uruchamia serwer lokalny |',
-      '| `pytest -q` | uruchamia testy |',
-      '| `python build.py` | buduje paczkę do wysłania |'
+      '| `python main.py` | starts the local server |',
+      '| `pytest -q` | runs the tests |',
+      '| `python build.py` | builds a package to ship |'
     );
 
     const docArch = L(
-      '# Architektura',
+      '# Architecture',
       '',
-      'Aplikacja ma trzy warstwy: przeglądarkę, serwer i bazę danych.',
+      'The app has three layers: the browser, the server and the database.',
       '',
-      '## Warstwy',
+      '## Layers',
       '',
-      '| Warstwa | Technologia | Rola |',
+      '| Layer | Technology | Role |',
       '|---|---|---|',
-      '| Front | HTML, CSS, JavaScript | katalog, widok projektu, paleta poleceń |',
-      '| Serwer | FastAPI | logowanie, API, uruchamianie poleceń |',
-      '| Dane | SQLite | projekty, zadania, dokumentacja |',
+      '| Front end | HTML, CSS, JavaScript | catalog, project view, command palette |',
+      '| Server | FastAPI | login, API, running commands |',
+      '| Data | SQLite | projects, tasks, documentation |',
       '',
-      '## Przepływ zapytania',
+      '## Request flow',
       '',
-      'Każde uruchomienie polecenia przechodzi przez serwer, który sprawdza, czy polecenie jest zapisane przy projekcie.',
+      'Every command run goes through the server, which checks whether the command is stored with the project.',
       '',
       '~~~python',
       '@router.post("/api/projects/{project_id}/run")',
       'def run_project(project_id: int, body: RunBody, user=Depends(current_user)):',
       '    project = db.get_project(project_id)',
-      '    command = project.find_command(body.command_id)  # tylko zapisane polecenia',
+      '    command = project.find_command(body.command_id)  # only stored commands',
       '    if command is None:',
-      '        raise HTTPException(404, "Nie ma takiego polecenia")',
+      '        raise HTTPException(404, "No such command")',
       '    return runner.start(command, cwd=project.path)',
       '~~~',
       '',
       '> [!WARNING]',
-      '> Serwer nasłuchuje wyłącznie na `127.0.0.1`. Nie zmieniaj tego na `0.0.0.0`, bo inne urządzenia w sieci mogłyby uruchamiać polecenia na Twoim komputerze.',
+      '> The server listens on `127.0.0.1` only. Do not change it to `0.0.0.0`, or other devices on the network could run commands on your computer.',
       '',
-      '## Struktura katalogów',
+      '## Directory structure',
       '',
       '~~~text',
       'projecthub/',
@@ -116,140 +116,140 @@
     );
 
     const docSec = L(
-      '# Bezpieczeństwo',
+      '# Security',
       '',
-      'Lista kontrolna przed każdym wydaniem.',
+      'A checklist to go through before every release.',
       '',
-      '- [x] hasła tylko jako hash (bcrypt lub argon2)',
-      '- [x] nasłuch tylko na `127.0.0.1`',
-      '- [x] uruchamiane są wyłącznie polecenia zapisane w bazie',
-      '- [ ] ochrona CSRF dla każdego zapisu',
-      '- [ ] ochrona przed wyjściem poza folder projektu w przeglądarce plików',
+      '- [x] passwords only as hashes (bcrypt or argon2)',
+      '- [x] listen on `127.0.0.1` only',
+      '- [x] only commands stored in the database are executed',
+      '- [ ] CSRF protection for every write',
+      '- [ ] protection against escaping the project folder in the file browser',
       '',
-      '## Ochrona ścieżek',
+      '## Path protection',
       '',
-      'Przy podglądzie plików ścieżka jest zawsze liczona względem folderu projektu. Wyjście poza niego kończy się błędem.',
+      'When previewing files, the path is always resolved relative to the project folder. Escaping it results in an error.',
       '',
       '~~~python',
       'def safe_join(root: Path, relative: str) -> Path:',
       '    target = (root / relative).resolve()',
       '    if root.resolve() not in target.parents and target != root.resolve():',
-      '        raise HTTPException(400, "Ścieżka poza folderem projektu")',
+      '        raise HTTPException(400, "Path outside the project folder")',
       '    return target',
       '~~~',
       '',
       '> [!IMPORTANT]',
-      '> Usuwanie projektu z katalogu nigdy nie usuwa plików z dysku.'
+      '> Removing a project from the catalog never deletes files from disk.'
     );
 
     const demoNotes = L(
-      '# Notatki robocze',
+      '# Working notes',
       '',
-      '## Na teraz',
-      '- [x] Ekran logowania',
-      '- [x] Katalog z teczkami',
-      '- [ ] Backend FastAPI',
-      '- [ ] Backup do ZIP',
+      '## Right now',
+      '- [x] Login screen',
+      '- [x] Catalog with folders',
+      '- [ ] FastAPI backend',
+      '- [ ] ZIP backup',
       '',
-      '## Pomysły',
-      '- **Paleta poleceń** pod `Ctrl+K`',
-      '- Wklejanie zrzutów ekranu prosto do galerii',
-      '- Wykluczenia przy backupie: `node_modules`, `.venv`',
+      '## Ideas',
+      '- **Command palette** under `Ctrl+K`',
+      '- Pasting screenshots straight into the gallery',
+      '- Backup exclusions: `node_modules`, `.venv`',
       '',
-      '> Najpierw front, potem serwer. Nie odwrotnie.',
+      '> Front end first, then the server. Not the other way around.',
       '',
-      'Notatki edytujesz w trzech trybach: sam tekst, podział albo sam podgląd.'
+      'You edit notes in three modes: text only, split, or preview only.'
     );
 
     const botDoc = L(
-      '# Komendy bota',
+      '# Bot commands',
       '',
-      'Bot reaguje na polecenia zaczynające się od `/`.',
+      'The bot reacts to commands starting with `/`.',
       '',
-      '| Komenda | Opis |',
+      '| Command | Description |',
       '|---|---|',
-      '| `/glosuj` | tworzy głosowanie z przyciskami |',
-      '| `/przypomnij` | ustawia przypomnienie na wskazaną godzinę |',
-      '| `/licznik` | pokazuje liczbę wiadomości z ostatniego tygodnia |',
+      '| `/vote` | creates a poll with buttons |',
+      '| `/remind` | sets a reminder for a given time |',
+      '| `/count` | shows the number of messages from the last week |',
       '',
       '> [!NOTE]',
-      '> Token bota trzymaj w pliku `.env`. Nigdy nie wpisuj go w kod.'
+      '> Keep the bot token in a `.env` file. Never type it into the code.'
     );
 
     return [
       P({
-        id: 'demo-projecthub', name: 'ProjectHub (projekt demo)', path: 'D:\\Projekty\\projecthub', category: 'Narzędzia',
-        description: 'Ten wpis pokazuje, jak wygląda w pełni opisany projekt: galeria, polecenia, zadania, notatki, dokumentacja i przeglądarka plików.',
-        notes: demoNotes, tech: ['Python', 'FastAPI', 'SQLite'], tags: ['demo', 'narzędzie'],
+        id: 'demo-projecthub', name: 'ProjectHub (demo project)', path: 'D:\\Projekty\\projecthub', category: 'Tools',
+        description: 'This entry shows what a fully described project looks like: gallery, commands, tasks, notes, documentation and a file browser.',
+        notes: demoNotes, tech: ['Python', 'FastAPI', 'SQLite'], tags: ['demo', 'tool'],
         favorite: true, status: 'active', sizeBytes: 38 * MB, updatedAt: isoAgo(0), backedUpAt: isoAgo(0),
-        commands: [C('Serwer', 'python main.py'), C('Testy', 'pytest -q'), C('Build', 'python build.py')],
-        tasks: [T('Ekran logowania', 'done'), T('Katalog projektów', 'done'), T('Widok projektu jak w Steamie', 'doing'), T('Backend FastAPI', 'todo'), T('Backup do ZIP', 'todo'), T('Skanowanie pulpitu', 'todo')],
-        docs: [D('Start', docStart), D('Architektura', docArch), D('Bezpieczeństwo', docSec)],
-        images: [img('Katalog', 170), img('Widok projektu', 200), img('Dokumentacja', 300)]
+        commands: [C('Server', 'python main.py'), C('Tests', 'pytest -q'), C('Build', 'python build.py')],
+        tasks: [T('Login screen', 'done'), T('Project catalog', 'done'), T('Steam-style project view', 'doing'), T('FastAPI backend', 'todo'), T('ZIP backup', 'todo'), T('Desktop scanning', 'todo'), T('Write the release notes', 'todo'), T('Tidy the CSS variables', 'doing'), T('Record a short demo video', 'todo')],
+        docs: [D('Start', docStart), D('Architecture', docArch), D('Security', docSec)],
+        images: [img('Library', 170), img('Project view', 200), img('Documentation', 300)]
       }),
       P({
-        name: 'Bot do Discorda', path: 'C:\\Users\\Ty\\Desktop\\bot_discord', category: 'Boty i skrypty',
-        description: 'Bot moderujący serwer znajomych: głosowania, przypomnienia i licznik wiadomości.',
-        notes: L('Token trzymam w pliku `.env`, nie w kodzie.', '', '- [ ] komenda `/ranking`'),
-        tech: ['Python', 'discord.py', 'SQLite'], tags: ['bot', 'serwer'], favorite: true, status: 'active',
+        name: 'Discord bot', path: 'C:\\Users\\Ty\\Desktop\\bot_discord', category: 'Bots and scripts',
+        description: 'A moderation bot for a friends\' server: polls, reminders and a message counter.',
+        notes: L('I keep the token in a `.env` file, not in the code.', '', '- [ ] `/leaderboard` command'),
+        tech: ['Python', 'discord.py', 'SQLite'], tags: ['bot', 'server'], favorite: true, status: 'active',
         sizeBytes: Math.round(12.4 * MB), updatedAt: isoAgo(2), backedUpAt: isoAgo(3),
-        commands: [C('Start', 'python bot.py'), C('Logi', 'python tail_logs.py')],
-        tasks: [T('Komenda /ranking', 'doing'), T('Zapis głosowań do bazy', 'todo'), T('Poprawić przypomnienia', 'done')],
-        docs: [D('Komendy bota', botDoc)], images: [img('Panel komend', 210)]
+        commands: [C('Start', 'python bot.py'), C('Logs', 'python tail_logs.py')],
+        tasks: [T('/leaderboard command', 'doing'), T('Store polls in the database', 'todo'), T('Fix the reminders', 'done'), T('Add slash-command cooldowns', 'todo'), T('Migrate the bot to a VPS', 'todo')],
+        docs: [D('Bot commands', botDoc)], images: [img('Command panel', 210)]
       }),
       P({
-        name: 'Portfolio', path: 'D:\\Projekty\\portfolio', category: 'Strony WWW',
-        description: 'Strona z moimi pracami i formularzem kontaktowym.',
-        tech: ['HTML', 'CSS', 'JavaScript'], tags: ['osobiste'], favorite: true, status: 'idea',
+        name: 'Portfolio', path: 'D:\\Projekty\\portfolio', category: 'Websites',
+        description: 'A page with my work and a contact form.',
+        tech: ['HTML', 'CSS', 'JavaScript'], tags: ['personal'], favorite: true, status: 'idea',
         sizeBytes: Math.round(1.8 * GB), updatedAt: isoAgo(45), backedUpAt: isoAgo(40),
-        tasks: [T('Wybrać układ strony głównej', 'todo'), T('Zdjęcia do galerii', 'todo')]
+        tasks: [T('Pick the home page layout', 'todo'), T('Photos for the gallery', 'todo'), T('Hook up the contact form', 'doing'), T('Buy the domain', 'todo')]
       }),
       P({
-        name: 'Sklep rowerowy', path: 'C:\\Users\\Ty\\Desktop\\sklep_rowery', category: 'Strony WWW',
-        description: 'Makieta sklepu z częściami rowerowymi dla znajomego. Koszyk działa tylko w przeglądarce.',
-        notes: 'Klient chce wersję z filtrem po rozmiarze koła.',
-        tech: ['HTML', 'CSS', 'JavaScript'], tags: ['zlecenie', 'makieta'], status: 'paused',
+        name: 'Bike shop', path: 'C:\\Users\\Ty\\Desktop\\sklep_rowery', category: 'Websites',
+        description: 'A mockup of a bike parts shop for a friend. The cart only works in the browser.',
+        notes: 'The client wants a version with a wheel-size filter.',
+        tech: ['HTML', 'CSS', 'JavaScript'], tags: ['client work', 'mockup'], status: 'paused',
         sizeBytes: 214 * MB, updatedAt: isoAgo(6), backedUpAt: null,
-        tasks: [T('Filtr po rozmiarze koła', 'todo'), T('Strona koszyka', 'doing')],
-        images: [img('Strona główna', 28), img('Koszyk', 150)]
+        tasks: [T('Wheel size filter', 'todo'), T('Cart page', 'doing'), T('Ask the client about the logo', 'todo'), T('Responsive navigation', 'todo')],
+        images: [img('Home page', 28), img('Cart', 150)]
       }),
       P({
-        name: 'Scraper ogłoszeń', path: 'D:\\Stare\\scraper_ogloszen', category: 'Boty i skrypty',
-        description: 'Skrypt, który co godzinę sprawdza ogłoszenia i zapisuje nowe do pliku CSV.',
-        tech: ['Python', 'BeautifulSoup'], tags: ['automatyzacja'], status: 'active',
+        name: 'Listings scraper', path: 'D:\\Stare\\scraper_ogloszen', category: 'Bots and scripts',
+        description: 'A script that checks listings every hour and saves new ones to a CSV file.',
+        tech: ['Python', 'BeautifulSoup'], tags: ['automation'], status: 'active',
         sizeBytes: Math.round(5.2 * MB), updatedAt: isoAgo(14), backedUpAt: isoAgo(21),
-        commands: [C('Uruchom', 'python scraper.py')]
+        commands: [C('Run', 'python scraper.py')]
       }),
       P({
-        name: 'Wąż', path: 'C:\\Users\\Ty\\Desktop\\snake', category: 'Gry',
-        description: 'Klasyczny wąż na canvasie, z zapisem najlepszego wyniku.',
-        tech: ['JavaScript', 'Canvas'], tags: ['gra', 'nauka'], status: 'done',
+        name: 'Snake', path: 'C:\\Users\\Ty\\Desktop\\snake', category: 'Games',
+        description: 'The classic snake on a canvas, with a high-score save.',
+        tech: ['JavaScript', 'Canvas'], tags: ['game', 'learning'], status: 'done',
         sizeBytes: Math.round(1.1 * MB), updatedAt: isoAgo(30), backedUpAt: null,
-        images: [img('Plansza', 120)]
+        images: [img('Board', 120)]
       }),
       P({
-        name: 'Budżet domowy', path: 'D:\\Projekty\\budzet_domowy', category: 'Dane',
-        description: 'Notebook, który wczytuje wyciągi z banku i rysuje wydatki miesiąc po miesiącu.',
-        tech: ['Python', 'pandas', 'Jupyter'], tags: ['finanse'], status: 'active',
+        name: 'Home budget', path: 'D:\\Projekty\\budzet_domowy', category: 'Data',
+        description: 'A notebook that loads bank statements and plots spending month by month.',
+        tech: ['Python', 'pandas', 'Jupyter'], tags: ['finance'], status: 'active',
         sizeBytes: 96 * MB, updatedAt: isoAgo(4), backedUpAt: isoAgo(1),
-        tasks: [T('Kategorie wydatków', 'doing')], images: [img('Wydatki', 260)]
+        tasks: [T('Spending categories', 'doing'), T('Import the CSV export', 'todo'), T('Add a monthly budget cap', 'todo')], images: [img('Spending', 260)]
       }),
       P({
-        name: 'Kalkulator walut', path: 'D:\\Stare\\kalkulator_walut', category: 'Narzędzia',
-        description: 'Prosty przelicznik walut z kursami z NBP.',
-        tech: ['Python'], tags: ['nauka'], status: 'done', archived: true,
+        name: 'Currency converter', path: 'D:\\Stare\\kalkulator_walut', category: 'Tools',
+        description: 'A simple currency converter with rates from the national bank.',
+        tech: ['Python'], tags: ['learning'], status: 'done', archived: true,
         sizeBytes: Math.round(2.2 * MB), updatedAt: isoAgo(120), backedUpAt: isoAgo(118)
       }),
       P({
-        name: 'Projekt ze szkoły', path: 'C:\\Users\\Ty\\Desktop\\stary_projekt_szkola', category: 'Inne',
-        description: 'Strona na zaliczenie. Do wyrzucenia, ale wolę zachować.',
-        tech: ['HTML'], tags: ['szkoła'], status: 'idea', archived: true,
+        name: 'School project', path: 'C:\\Users\\Ty\\Desktop\\stary_projekt_szkola', category: 'Other',
+        description: 'A page made for a class grade. Due for deletion, but I\'d rather keep it.',
+        tech: ['HTML'], tags: ['school'], status: 'idea', archived: true,
         sizeBytes: 340 * MB, updatedAt: isoAgo(400), backedUpAt: null
       })
     ];
   }
 
-  /* ---------- drzewo plików (do przeglądarki plików w demo) ---------- */
+  /* ---------- file tree (for the demo file browser) ---------- */
 
   const enc = s => new TextEncoder().encode(s).length;
   function hashStr(s) { let h = 0; for (const c of s) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h; }
@@ -265,11 +265,11 @@
     const techs = p.tech.map(t => t.toLowerCase()).join(' ');
     const cmd = p.commands && p.commands[0] ? p.commands[0].cmd : 'python main.py';
 
-    add('README.md', L('# ' + p.name, '', p.description || 'Opis projektu.', '', '## Uruchomienie', '', '~~~bash', cmd, '~~~', ''));
+    add('README.md', L('# ' + p.name, '', p.description || 'Project description.', '', '## Running', '', '~~~bash', cmd, '~~~', ''));
     add('.gitignore', L('__pycache__/', 'node_modules/', '.venv/', '.env', ''));
 
     if (p.id === 'demo-projecthub') {
-      add('main.py', L('import uvicorn', '', 'if __name__ == "__main__":', '    # tylko lokalnie, nigdy 0.0.0.0', '    uvicorn.run("app.routes:app", host="127.0.0.1", port=8000, reload=True)', ''));
+      add('main.py', L('import uvicorn', '', 'if __name__ == "__main__":', '    # local only, never 0.0.0.0', '    uvicorn.run("app.routes:app", host="127.0.0.1", port=8000, reload=True)', ''));
       add('requirements.txt', L('fastapi>=0.115', 'uvicorn>=0.30', 'bcrypt>=4.2', 'python-multipart>=0.0.9', ''));
       add('app/__init__.py', '');
       add('app/routes.py', L('from fastapi import FastAPI, Depends', 'from .auth import current_user', '', 'app = FastAPI(title="ProjectHub")', '', '@app.get("/api/projects")', 'def list_projects(user=Depends(current_user)):', '    return db.all_projects()', ''));
@@ -277,7 +277,7 @@
       add('app/db.py', L('import sqlite3', '', 'def connect():', '    conn = sqlite3.connect("projecthub.db")', '    conn.row_factory = sqlite3.Row', '    return conn', ''));
       add('static/index.html', L('<!doctype html>', '<html lang="pl">', '<head><title>ProjectHub</title></head>', '<body><main id="view"></main></body>', '</html>', ''));
       add('static/css/style.css', L(':root { --bg: #0E0C1A; --signal: #FFB65C; }', 'body { background: var(--bg); color: #EEEAFB; }', ''));
-      add('static/js/app.js', L('// router i widoki', 'const view = document.querySelector("#view");', 'window.addEventListener("hashchange", render);', 'function render() { view.textContent = location.hash; }', ''));
+      add('static/js/app.js', L('// router and views', 'const view = document.querySelector("#view");', 'window.addEventListener("hashchange", render);', 'function render() { view.textContent = location.hash; }', ''));
       add('tests/test_api.py', L('def test_list_requires_login(client):', '    r = client.get("/api/projects")', '    assert r.status_code == 401', ''));
       add('docs/screenshot-katalog.png', '__img:170');
       add('docs/screenshot-projekt.png', '__img:200');
@@ -288,14 +288,14 @@
       add('main.py', L('def main():', '    print("Start: ' + p.name + '")', '', 'if __name__ == "__main__":', '    main()', ''));
       add('requirements.txt', L('requests', ''));
       add('app/__init__.py', '');
-      add('app/core.py', L('def run(config: dict) -> None:', '    """Główna logika projektu."""', '    ...', ''));
+      add('app/core.py', L('def run(config: dict) -> None:', '    """Main project logic."""', '    ...', ''));
       add('tests/test_core.py', L('from app.core import run', '', 'def test_run_does_not_crash():', '    run({})', ''));
     }
     if (/html|css|javascript|canvas/.test(techs)) {
       add('index.html', L('<!doctype html>', '<html lang="pl">', '<head>', '  <meta charset="utf-8">', '  <title>' + p.name + '</title>', '  <link rel="stylesheet" href="css/style.css">', '</head>', '<body>', '  <script src="js/main.js"></script>', '</body>', '</html>', ''));
       add('css/style.css', L('body { margin: 0; font-family: sans-serif; }', ''));
       add('js/main.js', L('"use strict";', 'console.log("Start");', ''));
-      add('assets/ekran.png', '__img:' + (hashStr(p.name) % 360));
+      add('assets/screen.png', '__img:' + (hashStr(p.name) % 360));
     }
     return root;
   }

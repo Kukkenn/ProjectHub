@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pl">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="color-scheme" content="dark">
@@ -20,64 +20,64 @@
   <div class="app">
     <header class="topbar">
       <div class="topbar-in">
-        <a class="brand" href="#/" aria-label="ProjectHub, biblioteka">
+        <a class="brand" href="#/" aria-label="ProjectHub, library">
           <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 9a2 2 0 0 1 2-2h7l3 3h12a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="var(--signal)"/><path d="M3 14h26" stroke="#0E0C1A" stroke-width="1.6" opacity=".45"/></svg>
           <span>ProjectHub</span>
         </a>
 
-        <nav class="mainnav topnav" id="topNav" aria-label="Główna nawigacja"></nav>
+        <nav class="mainnav topnav" id="topNav" aria-label="Main navigation"></nav>
 
         <div class="search" role="search">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-          <input id="q" type="search" placeholder="Szukaj projektu…" aria-label="Szukaj projektów" autocomplete="off">
+          <input id="q" type="search" placeholder="Search for a project…" aria-label="Search projects" autocomplete="off">
           <kbd aria-hidden="true">/</kbd>
         </div>
 
         <div class="top-actions">
-          <button class="btn btn-quiet palette-btn" id="btnPalette" type="button" aria-label="Otwórz paletę poleceń" title="Paleta poleceń (Ctrl+K)"><span class="ico-slot" data-icon="cmd"></span><kbd>Ctrl K</kbd></button>
-          <button class="btn btn-primary" id="btnAdd" type="button"><span class="ico-slot" data-icon="plus"></span><span>Dodaj projekt</span></button>
-          <button class="btn" id="btnScan" type="button" title="Skanuj folder"><span class="ico-slot" data-icon="scan"></span><span class="lbl">Skanuj</span></button>
+          <button class="btn btn-quiet palette-btn" id="btnPalette" type="button" aria-label="Open the command palette" title="Command palette (Ctrl+K)"><span class="ico-slot" data-icon="cmd"></span><kbd>Ctrl K</kbd></button>
+          <button class="btn btn-primary" id="btnAdd" type="button"><span class="ico-slot" data-icon="plus"></span><span>Add project</span></button>
+          <button class="btn" id="btnScan" type="button" title="Scan folder"><span class="ico-slot" data-icon="scan"></span><span class="lbl">Scan</span></button>
           <button class="btn" id="btnBackup" type="button" title="Backup"><span class="ico-slot" data-icon="backup"></span><span class="lbl">Backup</span></button>
-          <button class="btn btn-quiet" id="btnLogout" type="button" title="Wyloguj"><span class="ico-slot" data-icon="logout"></span><span class="lbl" id="logoutLbl">Wyloguj</span></button>
+          <button class="btn btn-quiet" id="btnLogout" type="button" title="Log out"><span class="ico-slot" data-icon="logout"></span><span class="lbl" id="logoutLbl">Log out</span></button>
         </div>
       </div>
     </header>
 
     <div class="shell">
-      <aside class="sidenav mainnav" id="sideNav" aria-label="Główna nawigacja"></aside>
+      <aside class="sidenav mainnav" id="sideNav" aria-label="Main navigation"></aside>
       <main class="view" id="view" tabindex="-1"></main>
     </div>
   </div>
 
-  <!-- dodawanie i edycja -->
+  <!-- add and edit -->
   <dialog id="formDlg" class="modal" aria-labelledby="formTitle">
     <form id="projectForm" novalidate>
       <div class="modal-head">
-        <h2 id="formTitle">Dodaj projekt</h2>
-        <button type="button" class="icon-btn" data-close aria-label="Zamknij"><span class="ico-slot" data-icon="x"></span></button>
+        <h2 id="formTitle">Add project</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Close"><span class="ico-slot" data-icon="x"></span></button>
       </div>
       <div class="modal-body">
         <input type="hidden" id="f-id">
         <p class="form-error" id="f-error" role="alert" hidden></p>
 
         <div class="field">
-          <label for="f-name">Nazwa projektu</label>
+          <label for="f-name">Project name</label>
           <input id="f-name" maxlength="120" autocomplete="off" required>
         </div>
  <div class="field" id="f-source-box">
-          <span class="label" id="f-source-l">Pliki projektu</span>
+          <span class="label" id="f-source-l">Project files</span>
           <div class="seg" id="f-source" role="radiogroup" aria-labelledby="f-source-l">
-            <button type="button" role="radio" data-v="managed" aria-checked="true">Prześlij do ProjectHub</button>
-            <button type="button" role="radio" data-v="local" aria-checked="false">Folder na dysku</button>
+            <button type="button" role="radio" data-v="managed" aria-checked="true">Upload to ProjectHub</button>
+            <button type="button" role="radio" data-v="local" aria-checked="false">Folder on disk</button>
           </div>
         </div>
         <div class="field" id="f-upload-box">
           <div class="dz" id="f-dz" tabindex="0">
-            <p class="dz-title">Przeciągnij tu folder, pliki albo ZIP</p>
+            <p class="dz-title">Drop a folder, files or a ZIP here</p>
             <div class="dz-btns">
-              <button type="button" class="btn btn-sm" id="f-pick-dir">Wybierz folder</button>
-              <button type="button" class="btn btn-sm" id="f-pick-files">Wybierz pliki</button>
-              <button type="button" class="btn btn-sm" id="f-pick-zip">Wybierz ZIP</button>
+              <button type="button" class="btn btn-sm" id="f-pick-dir">Choose folder</button>
+              <button type="button" class="btn btn-sm" id="f-pick-files">Choose files</button>
+              <button type="button" class="btn btn-sm" id="f-pick-zip">Choose ZIP</button>
             </div>
             <p class="dz-sum" id="f-sum" aria-live="polite"></p>
             <div class="bar up-bar" id="f-prog" hidden><i></i></div>
@@ -88,12 +88,12 @@
           <p class="hint" id="f-up-hint"></p>
         </div>
         <div class="field" id="f-managed-note" hidden>
-          <p class="hint">Pliki tego projektu są przechowywane w ProjectHub. Dodawaj je, edytuj i usuwaj w zakładce <strong>Pliki</strong> na stronie projektu.</p>
+          <p class="hint">This project’s files are stored in ProjectHub. Add, edit and remove them in the <strong>Files</strong> tab on the project page.</p>
         </div>
         <div class="field" id="f-path-box">
-          <label for="f-path">Ścieżka do folderu</label>
+          <label for="f-path">Path to folder</label>
           <input id="f-path" class="mono" placeholder="D:\Projekty\moj-projekt" autocomplete="off" spellcheck="false">
-          <p class="hint">Zaznacz folder w Eksploratorze i naciśnij Ctrl + Shift + C, potem wklej tutaj. Cudzysłowy usunę sam. Możesz też wkleić ścieżkę do pliku: użyję jego folderu.</p>
+          <p class="hint">Select the folder in Explorer and press Ctrl + Shift + C, then paste here. I will strip the quotes. You can also paste a file path: I will use its folder.</p>
           <p class="hint import-hint" id="f-import-hint"></p>
         </div>
         <div class="field">
@@ -101,67 +101,67 @@
           <div class="seg" id="f-status" role="radiogroup" aria-labelledby="f-status-l"></div>
         </div>
         <div class="field" id="f-cmd-box">
-          <span class="label">Polecenia uruchomienia</span>
+          <span class="label">Run commands</span>
           <div id="f-cmds" class="cmd-list"></div>
-          <button type="button" class="btn btn-quiet add-row" id="f-cmd-add"><span class="ico-slot" data-icon="plus"></span><span>Dodaj polecenie</span></button>
-          <p class="hint">Każde polecenie to osobny przycisk w projekcie, na przykład „Serwer”, „Testy”, „Build”. Uruchamiają się w folderze projektu. Aplikacja odpala tylko to, co tu zapisałeś.</p>
+          <button type="button" class="btn btn-quiet add-row" id="f-cmd-add"><span class="ico-slot" data-icon="plus"></span><span>Add command</span></button>
+          <p class="hint">Each command is a separate button in the project, e.g. “Server”, “Tests”, “Build”. They run in the project folder. The app only runs what you saved here.</p>
         </div>
         <div class="field">
-          <label for="f-desc">Opis</label>
-          <textarea id="f-desc" rows="3" placeholder="Do czego służy ten projekt?"></textarea>
+          <label for="f-desc">Description</label>
+          <textarea id="f-desc" rows="3" placeholder="What is this project for?"></textarea>
         </div>
         <div class="field">
-          <label for="f-cat">Kategoria</label>
-          <input id="f-cat" list="catList" placeholder="Inne" autocomplete="off">
+          <label for="f-cat">Category</label>
+          <input id="f-cat" list="catList" placeholder="Other" autocomplete="off">
           <datalist id="catList"></datalist>
         </div>
         <div class="field">
-          <span class="label" id="f-icon-l">Ikona i kolor</span>
+          <span class="label" id="f-icon-l">Icon and color</span>
           <div class="ic-row" role="group" aria-labelledby="f-icon-l">
-            <input id="f-icon" class="ic-input" maxlength="8" placeholder="🙂" aria-label="Ikona (emoji)" autocomplete="off">
+            <input id="f-icon" class="ic-input" maxlength="8" placeholder="🙂" aria-label="Icon (emoji)" autocomplete="off">
             <div class="ic-picks" id="f-icons"></div>
           </div>
-          <div class="swatches colors" id="f-colors" role="radiogroup" aria-label="Kolor projektu"></div>
-          <p class="hint">Wklej dowolne emoji albo wybierz z listy. Bez wyboru użyję inicjałów i koloru kategorii.</p>
+          <div class="swatches colors" id="f-colors" role="radiogroup" aria-label="Project color"></div>
+          <p class="hint">Paste any emoji or pick one from the list. With no choice I will use initials and the category color.</p>
         </div>
         <div class="field">
-          <label for="f-tech">Technologie</label>
-          <div class="tags" id="techBox"><ul class="tag-list"></ul><input id="f-tech" placeholder="Wpisz i naciśnij Enter" autocomplete="off"></div>
+          <label for="f-tech">Technologies</label>
+          <div class="tags" id="techBox"><ul class="tag-list"></ul><input id="f-tech" placeholder="Type and press Enter" autocomplete="off"></div>
         </div>
         <div class="field">
-          <label for="f-tags">Tagi</label>
-          <div class="tags" id="tagBox"><ul class="tag-list"></ul><input id="f-tags" placeholder="Wpisz i naciśnij Enter" autocomplete="off"></div>
+          <label for="f-tags">Tags</label>
+          <div class="tags" id="tagBox"><ul class="tag-list"></ul><input id="f-tags" placeholder="Type and press Enter" autocomplete="off"></div>
         </div>
       </div>
       <div class="modal-foot">
-        <button type="button" class="btn" data-close>Anuluj</button>
-        <button type="submit" class="btn btn-primary" id="f-submit">Dodaj projekt</button>
+        <button type="button" class="btn" data-close>Cancel</button>
+        <button type="submit" class="btn btn-primary" id="f-submit">Add project</button>
       </div>
     </form>
   </dialog>
 
-  <!-- skanowanie folderu -->
+  <!-- scan a folder -->
   <dialog id="scanDlg" class="modal" aria-labelledby="scanTitle">
     <div class="modal-head">
-      <h2 id="scanTitle">Skanuj folder</h2>
-      <button type="button" class="icon-btn" data-close aria-label="Zamknij"><span class="ico-slot" data-icon="x"></span></button>
+      <h2 id="scanTitle">Scan folder</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close"><span class="ico-slot" data-icon="x"></span></button>
     </div>
     <div class="modal-body">
-      <p class="lead">Wskaż folder, na przykład Pulpit. Pokażę jego podfoldery, a Ty wybierzesz, które dodać jako projekty. Niczego nie przenoszę ani nie usuwam, zapisuję tylko ścieżki.</p>
+      <p class="lead">Point to a folder, e.g. the Desktop. I will show its subfolders and you pick which ones to add as projects. I move or delete nothing, I only save the paths.</p>
       <form id="scanForm" class="inline-form" novalidate>
         <div class="field grow">
-          <label for="s-path">Folder do przeskanowania</label>
+          <label for="s-path">Folder to scan</label>
           <input id="s-path" class="mono" placeholder="C:\Users\Ty\Desktop" autocomplete="off" spellcheck="false">
         </div>
-        <button type="submit" class="btn btn-primary" id="s-go">Skanuj</button>
+        <button type="submit" class="btn btn-primary" id="s-go">Scan</button>
       </form>
       <p class="form-error" id="s-error" role="alert" hidden></p>
       <div id="s-results"></div>
     </div>
     <div class="modal-foot">
       <span class="hint" id="s-count"></span>
-      <button type="button" class="btn" data-close>Zamknij</button>
-      <button type="button" class="btn btn-primary" id="s-import" disabled>Importuj zaznaczone</button>
+      <button type="button" class="btn" data-close>Close</button>
+      <button type="button" class="btn btn-primary" id="s-import" disabled>Import selected</button>
     </div>
   </dialog>
 
@@ -170,20 +170,20 @@
     <form id="backupForm" novalidate>
       <div class="modal-head">
         <h2 id="backupTitle">Backup</h2>
-        <button type="button" class="icon-btn" data-close aria-label="Zamknij"><span class="ico-slot" data-icon="x"></span></button>
+        <button type="button" class="icon-btn" data-close aria-label="Close"><span class="ico-slot" data-icon="x"></span></button>
       </div>
       <div class="modal-body">
         <p class="lead" id="b-lead"></p>
         <p class="form-error" id="b-error" role="alert" hidden></p>
         <div class="field" id="b-dest-box">
-          <label for="b-dest">Folder docelowy</label>
+          <label for="b-dest">Destination folder</label>
           <input id="b-dest" class="mono" placeholder="E:\Backupy" autocomplete="off" spellcheck="false">
-          <p class="hint">Dysk zewnętrzny albo folder synchronizowany z chmurą, na przykład OneDrive. <span id="b-exclude"></span></p>
+          <p class="hint">An external drive or a folder synced with the cloud, e.g. OneDrive. <span id="b-exclude"></span></p>
         </div>
         <div class="field">
           <div class="list-tools">
-            <span class="label">Projekty do zarchiwizowania</span>
-            <button type="button" class="btn btn-quiet" id="b-all">Zaznacz wszystkie</button>
+            <span class="label">Projects to back up</span>
+            <button type="button" class="btn btn-quiet" id="b-all">Select all</button>
           </div>
           <ul class="checklist" id="b-list"></ul>
         </div>
@@ -191,79 +191,81 @@
       </div>
       <div class="modal-foot">
         <span class="hint" id="b-count"></span>
-        <button type="button" class="btn" data-close>Zamknij</button>
-        <button type="button" class="btn" id="b-dl">Pobierz ZIP</button>
-        <button type="submit" class="btn btn-primary" id="b-go">Zapisz do folderu</button>
+        <button type="button" class="btn" data-close>Close</button>
+        <button type="button" class="btn" id="b-dl">Download ZIP</button>
+        <button type="submit" class="btn btn-primary" id="b-go">Save to folder</button>
       </div>
     </form>
   </dialog>
 
-  <!-- rozmiary projektów -->
+  <!-- project sizes -->
   <dialog id="sizesDlg" class="modal" aria-labelledby="sizesTitle">
     <div class="modal-head">
-      <h2 id="sizesTitle">Rozmiary projektów</h2>
-      <button type="button" class="icon-btn" data-close aria-label="Zamknij"><span class="ico-slot" data-icon="x"></span></button>
+      <h2 id="sizesTitle">Project sizes</h2>
+      <button type="button" class="icon-btn" data-close aria-label="Close"><span class="ico-slot" data-icon="x"></span></button>
     </div>
     <div class="modal-body">
       <div id="sizesBody"></div>
     </div>
     <div class="modal-foot">
       <span class="hint" id="sizesHint"></span>
-      <button type="button" class="btn" data-close>Zamknij</button>
-      <button type="button" class="btn btn-primary" id="sizesGo">Przelicz rozmiary</button>
+      <button type="button" class="btn" data-close>Close</button>
+      <button type="button" class="btn btn-primary" id="sizesGo">Recalculate sizes</button>
     </div>
   </dialog>
 
-  <!-- paleta poleceń -->
-  <dialog id="paletteDlg" class="palette" aria-label="Paleta poleceń">
+  <!-- command palette -->
+  <dialog id="paletteDlg" class="palette" aria-label="Command palette">
     <div class="pal-search">
       <span class="ico-slot" data-icon="search"></span>
-      <input id="palInput" type="text" placeholder="Szukaj projektu, strony dokumentacji albo polecenia" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="true" aria-controls="palList" aria-autocomplete="list">
+      <input id="palInput" type="text" placeholder="Search for a project, a documentation page or a command" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="true" aria-controls="palList" aria-autocomplete="list">
       <kbd>Esc</kbd>
     </div>
-    <div class="pal-list" id="palList" role="listbox" aria-label="Wyniki"></div>
-    <div class="pal-foot"><span><kbd>↑</kbd><kbd>↓</kbd> wybierz</span><span><kbd>Enter</kbd> otwórz</span><span><kbd>Esc</kbd> zamknij</span></div>
+    <div class="pal-list" id="palList" role="listbox" aria-label="Results"></div>
+    <div class="pal-foot"><span><kbd>↑</kbd><kbd>↓</kbd> select</span><span><kbd>Enter</kbd> open</span><span><kbd>Esc</kbd> close</span></div>
   </dialog>
 
-  <!-- potwierdzenie -->
+  <!-- confirm -->
   <dialog id="confirmDlg" class="modal small" aria-labelledby="confirmTitle">
     <form method="dialog">
-      <div class="modal-head"><h2 id="confirmTitle">Na pewno?</h2></div>
+      <div class="modal-head"><h2 id="confirmTitle">Are you sure?</h2></div>
       <div class="modal-body"><p id="confirmMsg"></p></div>
       <div class="modal-foot">
-        <button class="btn" value="cancel">Anuluj</button>
-        <button class="btn btn-danger" value="ok" id="confirmOk">Usuń</button>
+        <button class="btn" value="cancel">Cancel</button>
+        <button class="btn btn-danger" value="ok" id="confirmOk">Remove</button>
       </div>
     </form>
   </dialog>
 
-  <!-- pytanie o tekst -->
+  <!-- text prompt -->
   <dialog id="promptDlg" class="modal small" aria-labelledby="promptTitle">
     <form method="dialog">
-      <div class="modal-head"><h2 id="promptTitle">Nazwa</h2></div>
+      <div class="modal-head"><h2 id="promptTitle">Name</h2></div>
       <div class="modal-body">
-        <div class="field"><label for="promptInput" id="promptLabel">Nazwa</label><input id="promptInput" maxlength="120" autocomplete="off"></div>
+        <div class="field"><label for="promptInput" id="promptLabel">Name</label><input id="promptInput" maxlength="120" autocomplete="off"></div>
       </div>
       <div class="modal-foot">
-        <button class="btn" value="cancel" formnovalidate>Anuluj</button>
-        <button class="btn btn-primary" value="ok" id="promptOk">Zapisz</button>
+        <button class="btn" value="cancel" formnovalidate>Cancel</button>
+        <button class="btn btn-primary" value="ok" id="promptOk">Save</button>
       </div>
     </form>
   </dialog>
 
-  <!-- podgląd zdjęcia -->
-  <dialog id="lightbox" class="lightbox" aria-label="Podgląd zdjęcia">
-    <button type="button" class="icon-btn lb-close" data-lb="close" aria-label="Zamknij podgląd"><span class="ico-slot" data-icon="x"></span></button>
-    <button type="button" class="icon-btn lb-nav lb-prev" data-lb="prev" aria-label="Poprzednie zdjęcie"><span class="ico-slot" data-icon="back"></span></button>
+  <!-- photo lightbox -->
+  <dialog id="lightbox" class="lightbox" aria-label="Photo lightbox">
+    <button type="button" class="icon-btn lb-close" data-lb="close" aria-label="Close preview"><span class="ico-slot" data-icon="x"></span></button>
+    <button type="button" class="icon-btn lb-nav lb-prev" data-lb="prev" aria-label="Previous photo"><span class="ico-slot" data-icon="back"></span></button>
     <div class="lb-stage"><img id="lbImg" alt=""></div>
-    <button type="button" class="icon-btn lb-nav lb-next" data-lb="next" aria-label="Następne zdjęcie"><span class="ico-slot" data-icon="next"></span></button>
+    <button type="button" class="icon-btn lb-nav lb-next" data-lb="next" aria-label="Next photo"><span class="ico-slot" data-icon="next"></span></button>
     <p class="lb-cap" id="lbCap"></p>
   </dialog>
 
-  <div class="drop-ov" id="dropOv" aria-hidden="true"><div><strong>Upuść zdjęcia tutaj</strong><span>Dodam je do galerii tego projektu</span></div></div>
+  <div class="drop-ov" id="dropOv" aria-hidden="true"><div><strong>Drop photos here</strong><span>I will add them to this project’s gallery</span></div></div>
   <div id="toast" class="toast" popover="manual" role="status"></div>
 
   <script src="js/demo-data.js"></script>
+  <script src="js/lang-pl.js"></script>
+  <script src="js/i18n.js"></script>
   <script src="js/api.js"></script>
   <script src="js/md.js"></script>
   <script src="js/lib.js"></script>

@@ -57,6 +57,15 @@ ProjectHub bridges the gap between raw file explorers and heavy IDE workspace co
 * **Token-Authenticated Web Previews:** Test frontend HTML/CSS/JS builds in an isolated sandbox environment protected with strict Content Security Policy (`CSP`) headers.
 * **Directory Tech Scanner:** Scan system directories to automatically recognize project stacks (Python, Node.js, Rust, Go, Docker, C#) and batch-import project structures.
 * **Security Hardening:** Built-in defenses against Zip-Slip exploits, path traversal attacks, rate-throttled login attempts (scrypt), and CSRF validation.
+* **Bilingual UI:** English by default, with a one-click **Polski** switch in Settings — the whole interface (and the built-in guide) is available in both languages.
+
+---
+
+## <img src="https://cdn.simpleicons.org/youtube/FFB65C" width="20" align="center"> &nbsp;Demo Video
+
+[![ProjectHub trailer](docs/screenshots/hero.png)](docs/screenshots/projecthub-trailer.mp4)
+
+**▶ [Watch the ProjectHub trailer (MP4, ~15 MB)](docs/screenshots/projecthub-trailer.mp4)**
 
 ---
 

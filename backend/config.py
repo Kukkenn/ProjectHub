@@ -1,4 +1,4 @@
-"""Ustawienia z zmiennych środowiskowych (PROJECTHUB_*)."""
+"""Settings from environment variables (PROJECTHUB_*)."""
 import os
 
 MB = 1024 * 1024
@@ -16,7 +16,7 @@ if MODE not in ("local", "hosted"):
     MODE = "local"
 HOSTED = MODE == "hosted"
 
-# open: każdy może założyć konto; closed: konta tworzy administrator poleceniem manage.py
+# open - anyone can register themselves; closed - accounts are created by an admin via manage.py
 REGISTRATION = os.environ.get("PROJECTHUB_REGISTRATION", "open").strip().lower()
 if REGISTRATION not in ("open", "closed"):
     REGISTRATION = "open"
@@ -27,12 +27,12 @@ ALLOWED_HOSTS = {h.strip().lower() for h in os.environ.get("PROJECTHUB_ALLOWED_H
 TRUST_PROXY = os.environ.get("PROJECTHUB_TRUST_PROXY") == "1"
 HTTPS = os.environ.get("PROJECTHUB_HTTPS") == "1"
 
-QUOTA = _int("PROJECTHUB_QUOTA_MB", 500) * MB          # 0 = bez limitu
+QUOTA = _int("PROJECTHUB_QUOTA_MB", 500) * MB          # 0 = no limit
 MAX_FILE = _int("PROJECTHUB_MAX_FILE_MB", 50) * MB
-MAX_FILES = _int("PROJECTHUB_MAX_FILES", 5000)           # plików w jednym projekcie
+MAX_FILES = _int("PROJECTHUB_MAX_FILES", 5000)           # max files in a single project
 MAX_ZIP = _int("PROJECTHUB_MAX_ZIP_MB", 200) * MB
 
-# Funkcje, które dotykają dysku serwera, są tylko w trybie lokalnym.
+# Anything that pokes around the server's disk only makes sense in local mode.
 LOCAL_FEATURES = not HOSTED
 FEATURES = {
     "run": LOCAL_FEATURES,

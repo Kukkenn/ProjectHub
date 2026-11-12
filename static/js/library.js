@@ -1,4 +1,4 @@
-/* library.js: widok biblioteki (siatka teczek), formularz projektu, skanowanie, backup, rozmiary. */
+/* library.js: library view (grid of folders), project form, scanning, backup, sizes. */
 (function () {
   'use strict';
   const PH = window.PH;
@@ -6,7 +6,7 @@
   const icon = PH.icon;
   const S = PH.state;
 
-  /* ---------- filtrowanie i sortowanie ---------- */
+  /* ---------- filtering and sorting ---------- */
 
   function visible() {
     const q = norm(S.query.trim());
@@ -34,7 +34,7 @@
     return list;
   }
 
-  /* ---------- kafelek ---------- */
+  /* ---------- tile ---------- */
 
   PH.tileHtml = function (p, i, o) {
     o = o || {};
@@ -42,29 +42,29 @@
     const shown = p.tech.slice(0, 3), extra = p.tech.length - shown.length;
     const open = p.tasks.filter(t => t.state !== 'done').length;
     const cover = p.images.length
-      ? '<img src="' + esc(p.images[0].url) + '" alt="" loading="lazy" draggable="false">' + (p.images.length > 1 ? '<span class="img-count">' + p.images.length + ' ' + plural(p.images.length, 'zdjęcie', 'zdjęcia', 'zdjęć') + '</span>' : '')
+      ? '<img src="' + esc(p.images[0].url) + '" alt="" loading="lazy" draggable="false">' + (p.images.length > 1 ? '<span class="img-count">' + p.images.length + ' ' + plural(p.images.length, 'photo', 'photos', 'photos') + '</span>' : '')
       : '<span class="initials' + (p.icon ? ' is-emoji' : '') + '" aria-hidden="true">' + esc(PH.glyph(p)) + '</span>';
     return '<article class="tile' + (o.archive ? ' is-archived' : '') + '" data-id="' + esc(p.id) + '" style="' + PH.tabStyle(p) + ';--i:' + i + '"' + (o.drag ? ' draggable="true"' : '') + '>' +
       '<span class="tile-tab">' + esc(p.category) + '</span>' +
       '<div class="tile-cover">' + cover +
       '<span class="st" style="--st:' + st.c + '">' + st.label + '</span>' +
-      (o.archive ? '' : '<button class="star" type="button" data-act="star" aria-pressed="' + p.favorite + '" aria-label="' + (p.favorite ? 'Usuń z ulubionych: ' : 'Dodaj do ulubionych: ') + esc(p.name) + '">' + icon('star') + '</button>') +
+      (o.archive ? '' : '<button class="star" type="button" data-act="star" aria-pressed="' + p.favorite + '" aria-label="' + (p.favorite ? 'Remove from favorites: ' : 'Add to favorites: ') + esc(p.name) + '">' + icon('star') + '</button>') +
       '</div>' +
       '<div class="tile-body">' +
       '<h3><button class="tile-open" type="button">' + esc(p.name) + '</button></h3>' +
-      '<p class="desc' + (p.description ? '' : ' muted') + '">' + (p.description ? esc(p.description) : 'Bez opisu') + '</p>' +
+      '<p class="desc' + (p.description ? '' : ' muted') + '">' + (p.description ? esc(p.description) : 'No description') + '</p>' +
       (shown.length ? '<ul class="techs">' + shown.map(t => '<li>' + esc(t) + '</li>').join('') + (extra > 0 ? '<li>+' + extra + '</li>' : '') + '</ul>' : '') +
-      '<div class="foot"><span class="path" title="' + esc(p.storage === 'local' ? p.path : 'Pliki w ProjectHub') + '">' + (p.storage === 'local' ? esc(PH.shortPath(p.path)) : 'Wgrany projekt') + '</span>' +
-      (open && !o.archive ? '<span class="open-n" title="Otwarte zadania">' + icon('tasks') + open + '</span>' : '') +
+      '<div class="foot"><span class="path" title="' + esc(p.storage === 'local' ? p.path : 'Files in ProjectHub') + '">' + (p.storage === 'local' ? esc(PH.shortPath(p.path)) : 'Uploaded project') + '</span>' +
+      (open && !o.archive ? '<span class="open-n" title="Open tasks">' + icon('tasks') + open + '</span>' : '') +
       (PH.settings.showSize && p.sizeBytes ? '<span class="sz">' + PH.fmtSize(p.sizeBytes) + '</span>' : '') +
       '<span class="bk bk-' + b.cls + '">' + b.text + '</span></div>' +
-      (o.archive ? '<div class="tile-actions"><button class="btn" type="button" data-act="unarchive">Przywróć</button><button class="btn btn-danger-quiet" type="button" data-act="remove">Usuń z katalogu</button></div>' : '') +
+      (o.archive ? '<div class="tile-actions"><button class="btn" type="button" data-act="unarchive">Restore</button><button class="btn btn-danger-quiet" type="button" data-act="remove">Remove from catalog</button></div>' : '') +
       '</div></article>';
   };
 
-  /* ---------- szkielet i rysowanie ---------- */
+  /* ---------- skeleton and rendering ---------- */
 
-  const SORTS = [['manual', 'Własna kolejność'], ['recent', 'Ostatnio zmieniane'], ['name', 'Nazwa od A do Z'], ['backup', 'Najpierw bez backupu'], ['size', 'Największe najpierw']];
+  const SORTS = [['manual', 'Custom order'], ['recent', 'Recently changed'], ['name', 'Name A to Z'], ['backup', 'Missing backup first'], ['size', 'Largest first']];
 
   PH.views.library = function (route) {
     const view = PH.view;
@@ -72,12 +72,12 @@
       '<div class="lib page">' +
       '<div id="demoBar"></div>' +
       '<section class="hero"><div id="titleBox"></div>' +
-      '<div class="hero-tools"><button class="btn" type="button" id="btnSizes">' + icon('disk') + '<span>Rozmiary</span></button>' +
-      '<label class="sort">Sortuj <select id="sort">' + SORTS.map(s => '<option value="' + s[0] + '">' + s[1] + '</option>').join('') + '</select></label></div></section>' +
-      '<nav class="rail" id="catRail" aria-label="Kategorie"></nav>' +
+      '<div class="hero-tools"><button class="btn" type="button" id="btnSizes">' + icon('disk') + '<span>Sizes</span></button>' +
+      '<label class="sort">Sort <select id="sort">' + SORTS.map(s => '<option value="' + s[0] + '">' + s[1] + '</option>').join('') + '</select></label></div></section>' +
+      '<nav class="rail" id="catRail" aria-label="Categories"></nav>' +
       '<div class="filters" id="statusRow" role="group" aria-label="Status"></div>' +
-      '<div class="filters" id="techRow" role="group" aria-label="Technologie"></div>' +
-      '<section class="fav" id="favSection" hidden><h2 class="sec-title">' + icon('star', 'fav-ico') + '<span>Ulubione</span><em id="favCount"></em></h2><div id="favRow" class="fav-row"></div></section>' +
+      '<div class="filters" id="techRow" role="group" aria-label="Technologies"></div>' +
+      '<section class="fav" id="favSection" hidden><h2 class="sec-title">' + icon('star', 'fav-ico') + '<span>Favorites</span><em id="favCount"></em></h2><div id="favRow" class="fav-row"></div></section>' +
       '<section class="all"><h2 class="sec-title" id="allTitle" hidden></h2><div id="grid" class="grid"></div></section>' +
       '</div>';
     $('#sort').value = PH.settings.sort;
@@ -91,7 +91,7 @@
 
   function renderDemoBar() {
     $('#demoBar').innerHTML = PH.api.MOCK
-      ? '<div class="demo"><p>Tryb podglądu. Dane zapisują się tylko w tej przeglądarce, a uruchamianie, Eksplorator, pliki i backup tylko udają działanie.</p><button class="btn btn-quiet" type="button" data-act="reset-demo">Zresetuj dane demo</button></div>'
+      ? '<div class="demo"><p>Preview mode. Data is saved only in this browser, and running commands, Explorer, files and backup only pretend to work.</p><button class="btn btn-quiet" type="button" data-act="reset-demo">Reset demo data</button></div>'
       : '';
   }
 
@@ -112,7 +112,7 @@
     if (!rail) return;
     rail.style.setProperty('--rail', S.category ? PH.tabVar(S.category) : 'var(--line)');
     rail.innerHTML =
-      '<button class="cat" type="button" data-cat="" aria-pressed="' + !S.category + '"><span>Wszystkie</span><span class="n">' + live.length + '</span></button>' +
+      '<button class="cat" type="button" data-cat="" aria-pressed="' + !S.category + '"><span>All</span><span class="n">' + live.length + '</span></button>' +
       Array.from(cats.entries()).sort(byCount).map(([c, n]) =>
         '<button class="cat" type="button" data-cat="' + esc(c) + '" aria-pressed="' + (S.category === c) + '" style="--c:' + PH.tabVar(c) + '"><span class="sw"></span><span>' + esc(c) + '</span><span class="n">' + n + '</span></button>').join('');
 
@@ -121,7 +121,7 @@
 
     const techRows = Array.from(techs.entries()).sort(byCount);
     $('#techRow').innerHTML = techRows.length
-      ? '<span class="filters-label">Technologie</span>' + techRows.map(([t, n]) =>
+      ? '<span class="filters-label">Technologies</span>' + techRows.map(([t, n]) =>
         '<button class="chip" type="button" data-tech="' + esc(t) + '" aria-pressed="' + S.techs.has(t) + '">' + esc(t) + '<span>' + n + '</span></button>').join('')
       : '';
 
@@ -140,11 +140,11 @@
     const first = !box.firstChild;
 
     box.innerHTML =
-      '<h1>' + esc(S.category || 'Twoje projekty') + '</h1>' +
-      '<div class="status"><span><b class="num" id="numTotal" data-v="' + (first ? 0 : (filtered ? list.length : total)) + '">' + (first ? 0 : (filtered ? list.length : total)) + '</b> ' + (filtered ? 'z ' + total + ' ' : '') + plural(total, 'projekt', 'projekty', 'projektów') + '</span>' +
-      (unsaved ? '<button class="flag" type="button" data-act="nobackup" aria-pressed="' + S.noBackup + '">' + unsaved + ' bez backupu</button>' : '') +
-      (recent ? '<span class="recent">Ostatnio zmieniany: <button class="linkish" type="button" data-act="open-project" data-id="' + esc(recent.id) + '">' + esc(recent.name) + '</button></span>' : '') +
-      (filtered ? '<button class="btn btn-quiet" type="button" data-act="clear">Wyczyść filtry</button>' : '') + '</div>';
+      '<h1>' + esc(S.category || 'Your projects') + '</h1>' +
+      '<div class="status"><span><b class="num" id="numTotal" data-v="' + (first ? 0 : (filtered ? list.length : total)) + '">' + (first ? 0 : (filtered ? list.length : total)) + '</b> ' + (filtered ? 'of ' + total + ' ' : '') + plural(total, 'project', 'projects', 'projects') + '</span>' +
+      (unsaved ? '<button class="flag" type="button" data-act="nobackup" aria-pressed="' + S.noBackup + '">' + unsaved + ' without backup</button>' : '') +
+      (recent ? '<span class="recent">Last changed: <button class="linkish" type="button" data-act="open-project" data-id="' + esc(recent.id) + '">' + esc(recent.name) + '</button></span>' : '') +
+      (filtered ? '<button class="btn btn-quiet" type="button" data-act="clear">Clear filters</button>' : '') + '</div>';
     if (first) PH.countUp($('#numTotal'), filtered ? list.length : total);
     $('#sort').value = PH.settings.sort;
   }
@@ -167,16 +167,16 @@
 
       const t = $('#allTitle');
       t.hidden = !favs.length || !rest.length;
-      t.textContent = 'Pozostałe projekty';
+      t.textContent = 'Other projects';
 
       if (!live.length) {
         grid.className = '';
-        grid.innerHTML = '<div class="empty"><h2>Katalog jest jeszcze pusty</h2><p>Zeskanuj folder, na przykład Pulpit, i wybierz, które podfoldery są projektami. Możesz też dodać projekt ręcznie.</p>' +
-          '<div class="empty-actions"><button class="btn btn-primary" type="button" data-act="scan">Zeskanuj folder</button><button class="btn" type="button" data-act="add">Dodaj projekt</button></div></div>';
+        grid.innerHTML = '<div class="empty"><h2>Your catalog is still empty</h2><p>Scan a folder, such as your Desktop, and pick which subfolders are projects. You can also add a project manually.</p>' +
+          '<div class="empty-actions"><button class="btn btn-primary" type="button" data-act="scan">Scan a folder</button><button class="btn" type="button" data-act="add">Add project</button></div></div>';
       } else if (!list.length) {
         grid.className = '';
-        grid.innerHTML = '<div class="empty"><h2>Nic nie pasuje do tych filtrów</h2><p>Zmień frazę w wyszukiwarce albo zdejmij wybrane filtry.</p>' +
-          '<div class="empty-actions"><button class="btn btn-primary" type="button" data-act="clear">Wyczyść filtry</button></div></div>';
+        grid.innerHTML = '<div class="empty"><h2>Nothing matches these filters</h2><p>Change the search phrase or remove the active filters.</p>' +
+          '<div class="empty-actions"><button class="btn btn-primary" type="button" data-act="clear">Clear filters</button></div></div>';
       } else {
         grid.className = 'grid' + (settle ? ' settle' : '');
         grid.innerHTML = rest.map((p, i) => PH.tileHtml(p, i + favs.length, { drag: manual })).join('');
@@ -187,7 +187,7 @@
     grid.classList.toggle('can-drag', manual);
   }
 
-  /* ---------- zdarzenia widoku ---------- */
+  /* ---------- view events ---------- */
 
   function rerenderAll() { renderRails(); renderHero(); renderGrids(); }
   PH.libRerender = () => { if ($('#grid')) rerenderAll(); };
@@ -210,7 +210,7 @@
     const view = PH.view;
     if (!view || !view.contains(e.target)) return;
 
-    /* kafelki w archiwum i w bibliotece mają wspólne akcje */
+    /* archive and library tiles share the same actions */
     const tile = e.target.closest('.tile');
     const act = e.target.closest('[data-act]');
 
@@ -249,7 +249,7 @@
     if (e.target.id === 'sort') { PH.setSetting('sort', e.target.value); renderGrids(); }
   });
 
-  /* ---------- przeciąganie teczek (własna kolejność) ---------- */
+  /* ---------- dragging folders (custom order) ---------- */
 
   let dragEl = null, lastSwap = 0;
 
@@ -268,7 +268,7 @@
     if (!t) return;
     dragEl = t;
     e.dataTransfer.effectAllowed = 'move';
-    try { e.dataTransfer.setData('text/plain', t.dataset.id); } catch (err) { /* j.w. */ }
+    try { e.dataTransfer.setData('text/plain', t.dataset.id); } catch (err) { /* ditto */ }
     requestAnimationFrame(() => t.classList.add('dragging'));
   });
   document.addEventListener('dragover', e => {
@@ -295,17 +295,17 @@
     if (!cont || e.dataTransfer.dropEffect === 'none') { renderGrids(); return; }
     const ids = $$('.tile', cont).map(t => t.dataset.id);
     applyGroupOrder(ids);
-    PH.api.reorder(S.projects.map(p => p.id)).catch(err => PH.toast('Nie udało się zapisać kolejności: ' + err.message, 'error'));
+    PH.api.reorder(S.projects.map(p => p.id)).catch(err => PH.toast('Could not save the order: ' + err.message, 'error'));
   });
 
-  /* ---------- akcje wspólne ---------- */
+  /* ---------- shared actions ---------- */
 
   PH.archive = async function (id, flag) {
     const p = PH.find(id);
     if (!p) return;
     try {
       await PH.patch(id, { archived: flag }, { optimistic: true });
-      PH.toast(flag ? 'Przeniesiono „' + p.name + '” do archiwum' : 'Przywrócono „' + p.name + '” do biblioteki');
+      PH.toast(flag ? 'Moved “' + p.name + '” to the archive' : 'Restored “' + p.name + '” to the library');
       PH.dataChanged();
     } catch (err) { PH.toast(err.message, 'error'); }
   };
@@ -313,12 +313,12 @@
   PH.removeProject = async function (id, afterRoute) {
     const p = PH.find(id);
     if (!p) return;
-    const yes = await PH.confirmDelete('Usunąć projekt z katalogu?', '„' + p.name + '” zniknie z katalogu. Folder i pliki na dysku zostaną nietknięte.', 'Usuń z katalogu');
+    const yes = await PH.confirmDelete('Remove the project from the catalog?', '“' + p.name + '” will disappear from the catalog. The folder and files on disk stay untouched.', 'Remove from catalog');
     if (!yes) return;
     try {
       await PH.api.deleteProject(id);
       S.projects = S.projects.filter(x => x.id !== id);
-      PH.toast('Usunięto „' + p.name + '” z katalogu');
+      PH.toast('Removed “' + p.name + '” from the catalog');
       if (afterRoute) PH.go(afterRoute); else PH.dataChanged();
     } catch (err) { PH.toast(err.message, 'error'); }
   };
@@ -328,13 +328,13 @@
     if (!p) return;
     const go = async () => {
       const r = await PH.api.runProject(projectId, commandId);
-      PH.toast((r && r.message) || 'Uruchomiono „' + p.name + '”');
+      PH.toast((r && r.message) || 'Ran “' + p.name + '”');
     };
-    if (btn) await PH.withBusy(btn, 'Uruchamianie…', go);
+    if (btn) await PH.withBusy(btn, 'Running…', go);
     else { try { await go(); } catch (err) { PH.toast(err.message, 'error'); } }
   };
 
-  /* ---------- formularz projektu ---------- */
+  /* ---------- project form ---------- */
 
   const techTags = PH.makeTags($('#techBox'));
   const otherTags = PH.makeTags($('#tagBox'));
@@ -351,9 +351,9 @@
 
   function cmdRow(c) {
     return '<div class="cmd-row" data-id="' + esc(c.id || PH.uid()) + '">' +
-      '<input class="cmd-label" placeholder="Nazwa (np. Serwer)" value="' + esc(c.label || '') + '" aria-label="Nazwa polecenia" maxlength="40" autocomplete="off">' +
-      '<input class="cmd-cmd mono" placeholder="python main.py" value="' + esc(c.cmd || '') + '" aria-label="Polecenie" autocomplete="off" spellcheck="false">' +
-      '<button type="button" class="icon-btn" data-rm-cmd aria-label="Usuń polecenie">' + icon('x') + '</button></div>';
+      '<input class="cmd-label" placeholder="Name (e.g. Server)" value="' + esc(c.label || '') + '" aria-label="Command name" maxlength="40" autocomplete="off">' +
+      '<input class="cmd-cmd mono" placeholder="python main.py" value="' + esc(c.cmd || '') + '" aria-label="Command" autocomplete="off" spellcheck="false">' +
+      '<button type="button" class="icon-btn" data-rm-cmd aria-label="Remove command">' + icon('x') + '</button></div>';
   }
   $('#f-cmd-add').addEventListener('click', () => {
     $('#f-cmds').insertAdjacentHTML('beforeend', cmdRow({}));
@@ -365,7 +365,7 @@
     if (b) b.closest('.cmd-row').remove();
   });
 
-  /* ---------- formularz projektu: źródło plików, ikona, kolor ---------- */
+  /* ---------- project form: file source, icon, color ---------- */
 
   const COLORS = ['#FF8FA3', '#FFB65C', '#F2D45C', '#6EE0B8', '#6CC9F2', '#8E9BFF', '#C79BFF', '#F58BD8', '#A3E36A', '#FF7A59'];
   const ICONS = ['📁', '🚀', '🌐', '🎮', '🤖', '🛒', '📊', '🎨', '🧪', '📱', '🐍', '⚡'];
@@ -382,22 +382,22 @@
     const im = PH.settings.importMode;
     $('#f-import-hint').hidden = !!editing || formSource !== 'local' || im === 'path';
     $('#f-import-hint').textContent = im === 'move'
-      ? 'Tryb z Ustawień: PRZENIEŚĆ. Pliki trafią do ProjectHub, a skopiowane pliki znikną z tego folderu (zapytam o potwierdzenie).'
-      : 'Tryb z Ustawień: KOPIUJ. Pliki zostaną skopiowane do ProjectHub, oryginały zostają na dysku.';
+      ? 'Mode from Settings: MOVE. Files will go into ProjectHub and the copied files will disappear from that folder (I will ask for confirmation).'
+      : 'Mode from Settings: COPY. Files will be copied into ProjectHub, the originals stay on disk.';
     const L = PH.limits || {};
-    $('#f-up-hint').textContent = 'Pomijam foldery node_modules, .git, .venv i __pycache__.' +
-      (L.maxFile ? ' Limity: plik ' + PH.fmtSize(L.maxFile) + ', ' + L.maxFiles + ' plików w projekcie' + (L.quota ? ', razem ' + PH.fmtSize(L.quota) + ' na konto' : '') + '.' : '');
+    $('#f-up-hint').textContent = 'Skipping the node_modules, .git, .venv and __pycache__ folders.' +
+      (L.maxFile ? ' Limits: file ' + PH.fmtSize(L.maxFile) + ', ' + L.maxFiles + ' files per project' + (L.quota ? ', ' + PH.fmtSize(L.quota) + ' per account' : '') + '.' : '');
   }
   function paintPicked() {
-    $('#f-sum').innerHTML = picked ? PH.upload.describe(picked) : '<span class="muted">Możesz też utworzyć pusty projekt i dodać pliki później.</span>';
+    $('#f-sum').innerHTML = picked ? PH.upload.describe(picked) : '<span class="muted">You can also create an empty project and add files later.</span>';
     $('#f-dz').classList.toggle('has', !!picked && (picked.zip || picked.entries.length));
   }
   function paintIconColor() {
     $('#f-icon').value = formIcon;
     $('#f-icons').innerHTML = ICONS.map(i => '<button type="button" class="ic-pick" data-i="' + i + '" aria-pressed="' + (i === formIcon) + '">' + i + '</button>').join('');
     $('#f-colors').innerHTML = '<button type="button" class="swatch" role="radio" data-c="" aria-checked="' + (!formColor) + '" style="--sw:var(--tab-auto,#8E9BFF)"><i></i>Auto</button>' +
-      COLORS.map(c => '<button type="button" class="swatch dot" role="radio" data-c="' + c + '" aria-checked="' + (formColor === c) + '" aria-label="Kolor ' + c + '" style="--sw:' + c + '"><i></i></button>').join('') +
-      '<label class="swatch dot custom" aria-label="Własny kolor"><i style="background:' + (formColor && COLORS.indexOf(formColor) < 0 ? formColor : 'conic-gradient(#f66,#fc6,#6f9,#6cf,#c6f,#f66)') + '"></i><input type="color" id="f-color-custom" value="' + (formColor || '#8e9bff') + '"></label>';
+      COLORS.map(c => '<button type="button" class="swatch dot" role="radio" data-c="' + c + '" aria-checked="' + (formColor === c) + '" aria-label="Color ' + c + '" style="--sw:' + c + '"><i></i></button>').join('') +
+      '<label class="swatch dot custom" aria-label="Custom color"><i style="background:' + (formColor && COLORS.indexOf(formColor) < 0 ? formColor : 'conic-gradient(#f66,#fc6,#6f9,#6cf,#c6f,#f66)') + '"></i><input type="color" id="f-color-custom" value="' + (formColor || '#8e9bff') + '"></label>';
   }
   $('#f-source').addEventListener('click', e => {
     const b = e.target.closest('button[data-v]');
@@ -436,7 +436,7 @@
   dz.addEventListener('drop', async e => {
     e.preventDefault(); e.stopPropagation();
     dz.classList.remove('over');
-    try { setPicked(await PH.upload.fromDrop(e.dataTransfer)); } catch (err) { PH.showErr('#f-error', 'Nie udało się odczytać upuszczonych plików.'); }
+    try { setPicked(await PH.upload.fromDrop(e.dataTransfer)); } catch (err) { PH.showErr('#f-error', 'Could not read the dropped files.'); }
   });
 
   PH.openForm = function (p, opts) {
@@ -447,8 +447,8 @@
     formSource = p ? p.storage : (PH.features.upload ? 'managed' : 'local');
     formIcon = p ? (p.icon || '') : '';
     formColor = p ? (p.color || '') : '';
-    $('#formTitle').textContent = p ? 'Edytuj projekt' : 'Dodaj projekt';
-    $('#f-submit').textContent = p ? 'Zapisz zmiany' : 'Dodaj projekt';
+    $('#formTitle').textContent = p ? 'Edit project' : 'Add project';
+    $('#f-submit').textContent = p ? 'Save changes' : 'Add project';
     $('#f-id').value = p ? p.id : '';
     $('#f-name').value = p ? p.name : '';
     $('#f-path').value = p ? p.path : '';
@@ -489,7 +489,7 @@
     const data = {
       name: $('#f-name').value.trim(),
       description: $('#f-desc').value.trim(),
-      category: $('#f-cat').value.trim() || 'Inne',
+      category: $('#f-cat').value.trim() || 'Other',
       status: formStatus,
       icon: formIcon,
       color: formColor,
@@ -505,58 +505,58 @@
     if (local && !importing) data.path = srcPath;
     if (id) data.id = id;
 
-    if (!data.name) { PH.showErr('#f-error', 'Wpisz nazwę projektu.'); $('#f-name').focus(); return; }
-    if (local && !srcPath) { PH.showErr('#f-error', 'Wpisz ścieżkę do folderu projektu.'); $('#f-path').focus(); return; }
+    if (!data.name) { PH.showErr('#f-error', 'Enter the project name.'); $('#f-name').focus(); return; }
+    if (local && !srcPath) { PH.showErr('#f-error', 'Enter the path to the project folder.'); $('#f-path').focus(); return; }
     if (local && !importing) {
       const dup = S.projects.find(p => p.id !== id && p.storage === 'local' && PH.normPath(p.path) === PH.normPath(data.path));
-      if (dup) { PH.showErr('#f-error', 'Ten folder jest już w katalogu jako „' + dup.name + '”.'); $('#f-path').focus(); return; }
+      if (dup) { PH.showErr('#f-error', 'This folder is already in the catalog as “' + dup.name + '”.'); $('#f-path').focus(); return; }
     }
     const prob = !id && picked ? PH.upload.problem(picked) : '';
     if (prob) { PH.showErr('#f-error', prob); return; }
     PH.showErr('#f-error', '');
-    if (importing && mode === 'move' && !(await PH.confirm('Przenieść pliki do ProjectHub?', 'Skopiuję pliki z „' + srcPath + '”, a po udanym kopiowaniu usunę skopiowane pliki z tego folderu. Pominięte foldery (np. node_modules) zostaną na miejscu. Zrób backup, jeśli to jedyny egzemplarz.', 'Przenieś'))) return;
+    if (importing && mode === 'move' && !(await PH.confirm('Move the files into ProjectHub?', 'I will copy the files from “' + srcPath + '”, and after a successful copy I will delete the copied files from that folder. Skipped folders (e.g. node_modules) stay in place. Make a backup if this is the only copy.', 'Move'))) return;
 
     const btn = $('#f-submit');
     const label = btn.textContent;
     saving = true;
     btn.disabled = true;
-    btn.textContent = 'Zapisywanie…';
+    btn.textContent = 'Saving…';
     let created = null;
     try {
       let saved = PH.replaceProject(await PH.api.saveProject(data));
       created = saved;
       if (importing) {
-        btn.textContent = mode === 'move' ? 'Przenoszenie plików…' : 'Kopiowanie plików…';
+        btn.textContent = mode === 'move' ? 'Moving files…' : 'Copying files…';
         try {
           const r = await PH.api.importPath(saved.id, srcPath, mode === 'move');
           saved = PH.replaceProject(r.project);
           created = saved;
-          PH.toast((mode === 'move' ? 'Przeniesiono ' : 'Skopiowano ') + r.saved + ' ' + PH.plural(r.saved, 'plik', 'pliki', 'plików') + (r.skipped ? ', pominięto ' + r.skipped : ''));
+          PH.toast((mode === 'move' ? 'Moved ' : 'Copied ') + r.saved + ' ' + PH.plural(r.saved, 'file', 'files', 'files') + (r.skipped ? ', skipped ' + r.skipped : ''));
         } catch (err) {
-          try { await PH.api.deleteProject(saved.id); S.projects = S.projects.filter(x => x.id !== saved.id); } catch (e2) { /* pusty projekt zostanie, można go usunąć ręcznie */ }
+          try { await PH.api.deleteProject(saved.id); S.projects = S.projects.filter(x => x.id !== saved.id); } catch (e2) { /* the empty project stays, you can remove it manually */ }
           created = null;
           throw err;
         }
       }
       const hasFiles = !id && picked && (picked.zip || picked.entries.length);
       if (hasFiles) {
-        btn.textContent = 'Wgrywanie plików…';
+        btn.textContent = 'Uploading files…';
         setProgress(0);
         const r = picked.zip
           ? await PH.api.uploadZip(saved.id, picked.zip, !data.description, setProgress)
           : await PH.api.uploadFiles(saved.id, picked.entries, { onProgress: setProgress });
         saved = PH.replaceProject(r.project);
-        if (r.skipped) PH.toast('Wgrano ' + r.saved + ' ' + PH.plural(r.saved, 'plik', 'pliki', 'plików') + ', pominięto ' + r.skipped + '.');
+        if (r.skipped) PH.toast('Uploaded ' + r.saved + ' ' + PH.plural(r.saved, 'file', 'files', 'files') + ', skipped ' + r.skipped + '.');
         PH.usage = (PH.usage || 0) + (picked.bytes || 0);
       }
       $('#formDlg').close();
-      PH.toast(id ? 'Zapisano zmiany w „' + saved.name + '”' : 'Dodano „' + saved.name + '”');
+      PH.toast(id ? 'Saved changes to “' + saved.name + '”' : 'Added “' + saved.name + '”');
       PH.dataChanged();
     } catch (err) {
       if (created) {
         $('#formDlg').close();
         PH.dataChanged();
-        PH.toast('Projekt „' + created.name + '” utworzono, ale pliki nie zostały wgrane: ' + err.message + ' Dodasz je w zakładce Pliki.', 'error');
+        PH.toast('Project “' + created.name + '” was created, but the files were not uploaded: ' + err.message + ' You can add them in the Files tab.', 'error');
       } else PH.showErr('#f-error', err.message);
     } finally {
       saving = false;
@@ -565,27 +565,27 @@
     }
   });
 
-  /* ---------- skanowanie ---------- */
+  /* ---------- scanning ---------- */
 
   let scanFolders = [];
   const updateScanCount = () => {
     const n = $$('#s-results input[data-i]:checked').length;
-    $('#s-count').textContent = scanFolders.length ? 'Zaznaczono ' + n + ' z ' + scanFolders.length : '';
+    $('#s-count').textContent = scanFolders.length ? 'Selected ' + n + ' of ' + scanFolders.length : '';
     $('#s-import').disabled = n === 0;
   };
   function renderScan() {
     const known = new Set(S.projects.map(p => PH.normPath(p.path)));
     const box = $('#s-results');
-    if (!scanFolders.length) { box.innerHTML = '<p class="hint">W tym folderze nie ma podfolderów do zaimportowania.</p>'; updateScanCount(); return; }
+    if (!scanFolders.length) { box.innerHTML = '<p class="hint">There are no subfolders to import in this folder.</p>'; updateScanCount(); return; }
     box.innerHTML =
-      '<div class="list-tools"><span class="label">Znalezione foldery</span><button type="button" class="btn btn-quiet" data-scan="all">Zaznacz nowe</button></div>' +
+      '<div class="list-tools"><span class="label">Found folders</span><button type="button" class="btn btn-quiet" data-scan="all">Select new</button></div>' +
       '<ul class="checklist">' + scanFolders.map((f, i) => {
         const isKnown = known.has(PH.normPath(f.path));
         return '<li><label><input type="checkbox" data-i="' + i + '"' + (isKnown ? ' disabled' : ' checked') + '>' +
           '<span class="ck-main"><span class="ck-name">' + esc(f.name) + '</span><span class="ck-sub" title="' + esc(f.path) + '">' + esc(f.path) + '</span></span>' +
-          '<span class="ck-meta">' + (isKnown ? 'już w katalogu' : esc((f.tech || []).join(', ')) + (f.files != null ? ((f.tech && f.tech.length) ? ', ' : '') + f.files + ' ' + plural(f.files, 'plik', 'pliki', 'plików') : '')) + '</span></label></li>';
+          '<span class="ck-meta">' + (isKnown ? 'already in catalog' : esc((f.tech || []).join(', ')) + (f.files != null ? ((f.tech && f.tech.length) ? ', ' : '') + f.files + ' ' + plural(f.files, 'file', 'files', 'files') : '')) + '</span></label></li>';
       }).join('') + '</ul>' +
-      '<div class="field" style="margin-top:14px"><label for="s-cat">Kategoria dla importowanych projektów</label><input id="s-cat" list="catList" placeholder="Inne" autocomplete="off"></div>';
+      '<div class="field" style="margin-top:14px"><label for="s-cat">Category for imported projects</label><input id="s-cat" list="catList" placeholder="Other" autocomplete="off"></div>';
     updateScanCount();
   }
   PH.openScan = function () {
@@ -599,13 +599,13 @@
   $('#scanForm').addEventListener('submit', async e => {
     e.preventDefault();
     const path = PH.cleanPath($('#s-path').value);
-    if (!path) { PH.showErr('#s-error', 'Wpisz ścieżkę folderu, który chcesz przeskanować.'); $('#s-path').focus(); return; }
+    if (!path) { PH.showErr('#s-error', 'Enter the path of the folder you want to scan.'); $('#s-path').focus(); return; }
     PH.showErr('#s-error', '');
     const btn = $('#s-go');
-    btn.disabled = true; btn.textContent = 'Skanowanie…';
+    btn.disabled = true; btn.textContent = 'Scanning…';
     try { scanFolders = (await PH.api.scan(path)).folders || []; renderScan(); }
     catch (err) { scanFolders = []; $('#s-results').innerHTML = ''; updateScanCount(); PH.showErr('#s-error', err.message); }
-    finally { btn.disabled = false; btn.textContent = 'Skanuj'; }
+    finally { btn.disabled = false; btn.textContent = 'Scan'; }
   });
   $('#s-results').addEventListener('change', e => { if (e.target.matches('input[data-i]')) updateScanCount(); });
   $('#s-results').addEventListener('click', e => {
@@ -614,31 +614,31 @@
   $('#s-import').addEventListener('click', async () => {
     const picks = $$('#s-results input[data-i]:checked').map(i => scanFolders[+i.dataset.i]);
     if (!picks.length) return;
-    const cat = ($('#s-cat') ? $('#s-cat').value.trim() : '') || 'Inne';
+    const cat = ($('#s-cat') ? $('#s-cat').value.trim() : '') || 'Other';
     const btn = $('#s-import');
-    btn.disabled = true; btn.textContent = 'Importowanie…';
+    btn.disabled = true; btn.textContent = 'Importing…';
     let ok = 0, lastErr = '';
     for (const f of picks) {
       try { PH.replaceProject(await PH.api.saveProject({ name: f.name, storage: 'local', path: f.path, description: '', category: cat, status: 'idea', tech: f.tech || [], tags: [], commands: [] })); ok++; }
       catch (err) { lastErr = err.message; }
     }
-    btn.textContent = 'Importuj zaznaczone';
+    btn.textContent = 'Import selected';
     PH.dataChanged();
     if (ok) {
       $('#scanDlg').close();
-      PH.toast('Zaimportowano ' + ok + ' ' + plural(ok, 'projekt', 'projekty', 'projektów') + (ok < picks.length ? '. Reszty nie udało się dodać: ' + lastErr : ''), ok < picks.length ? 'error' : undefined);
-    } else { btn.disabled = false; PH.showErr('#s-error', lastErr || 'Nie udało się zaimportować projektów.'); }
+      PH.toast('Imported ' + ok + ' ' + plural(ok, 'project', 'projects', 'projects') + (ok < picks.length ? '. Could not add the rest: ' + lastErr : ''), ok < picks.length ? 'error' : undefined);
+    } else { btn.disabled = false; PH.showErr('#s-error', lastErr || 'Could not import the projects.'); }
   });
 
   /* ---------- backup ---------- */
 
   const updateBackupCount = () => {
     const live = S.projects.filter(p => !p.archived).length;
-    $('#b-count').textContent = 'Zaznaczono ' + $$('#b-list input:checked').length + ' z ' + live;
+    $('#b-count').textContent = 'Selected ' + $$('#b-list input:checked').length + ' of ' + live;
   };
   PH.openBackup = function (preselect) {
     const live = S.projects.filter(p => !p.archived);
-    if (!live.length) { PH.toast('Najpierw dodaj projekt, który chcesz zarchiwizować.', 'error'); return; }
+    if (!live.length) { PH.toast('First add a project you want to back up.', 'error'); return; }
     const ids = new Set(preselect || live.map(p => p.id));
     $('#b-list').innerHTML = live.map(p => {
       const b = PH.backupInfo(p);
@@ -647,17 +647,17 @@
         '<span class="ck-meta">' + b.text + '</span></label></li>';
     }).join('');
     let dest = PH.settings.backupDest;
-    if (!dest) { try { dest = localStorage.getItem('ph_backup_dest') || ''; } catch (e) { /* j.w. */ } }
+    if (!dest) { try { dest = localStorage.getItem('ph_backup_dest') || ''; } catch (e) { /* ditto */ } }
     $('#b-dest').value = dest;
     const toPath = PH.features.backupToPath;
     $('#b-dest-box').hidden = !toPath;
     $('#b-go').hidden = !toPath;
     $('#b-dl').classList.toggle('btn-primary', !toPath);
-    $('#b-lead').innerHTML = toPath ? 'Każdy zaznaczony projekt trafi do osobnego pliku ZIP z datą w nazwie, na przykład <code id="b-example">nazwa-projektu-' + new Date().toISOString().slice(0, 10) + '.zip</code>. Wewnątrz jest folder <code>PROJECTHUB-INFO</code> z opisem, notatkami, zadaniami i dokumentacją.' : 'Zaznaczone projekty pobierzesz jako jeden plik ZIP (pliki + folder <code>PROJECTHUB-INFO</code> z opisem, notatkami, zadaniami, dokumentacją i zdjęciami).';
+    $('#b-lead').innerHTML = toPath ? 'Each selected project goes into a separate ZIP file with a date in the name, e.g. <code id="b-example">project-name-' + new Date().toISOString().slice(0, 10) + '.zip</code>. Inside is a <code>PROJECTHUB-INFO</code> folder with the description, notes, tasks and documentation.' : 'Selected projects are downloaded as one ZIP file (files + a <code>PROJECTHUB-INFO</code> folder with description, notes, tasks, documentation and images).';
     const ex = PH.settings.backupExclude;
-    $('#b-exclude').textContent = ex.length ? 'Pomijane foldery: ' + ex.join(', ') + ' (zmienisz to w ustawieniach).' : '';
+    $('#b-exclude').textContent = ex.length ? 'Excluded folders: ' + ex.join(', ') + ' (you can change this in settings).' : '';
     $('#b-results').innerHTML = '';
-    $('#b-all').textContent = ids.size >= live.length ? 'Odznacz wszystkie' : 'Zaznacz wszystkie';
+    $('#b-all').textContent = ids.size >= live.length ? 'Deselect all' : 'Select all';
     PH.showErr('#b-error', '');
     updateBackupCount();
     $('#backupDlg').showModal();
@@ -665,20 +665,20 @@
   };
   $('#b-dl').addEventListener('click', () => {
     const ids = $$('#b-list input:checked').map(i => i.value);
-    if (!ids.length) { PH.showErr('#b-error', 'Zaznacz co najmniej jeden projekt.'); return; }
+    if (!ids.length) { PH.showErr('#b-error', 'Select at least one project.'); return; }
     PH.showErr('#b-error', '');
     const a = document.createElement('a');
     a.href = ids.length === 1 ? PH.api.downloadUrl(ids[0]) : PH.api.backupDownloadUrl(ids);
     a.download = '';
     document.body.appendChild(a); a.click(); a.remove();
-    PH.toast('Pobieranie ZIP rozpoczęte');
+    PH.toast('ZIP download started');
   });
   $('#b-list').addEventListener('change', updateBackupCount);
   $('#b-all').addEventListener('click', () => {
     const boxes = $$('#b-list input');
     const all = boxes.every(b => b.checked);
     boxes.forEach(b => { b.checked = !all; });
-    $('#b-all').textContent = all ? 'Zaznacz wszystkie' : 'Odznacz wszystkie';
+    $('#b-all').textContent = all ? 'Select all' : 'Deselect all';
     updateBackupCount();
   });
   $('#backupForm').addEventListener('submit', async e => {
@@ -686,14 +686,14 @@
     const ids = $$('#b-list input:checked').map(i => i.value);
     if (!PH.features.backupToPath) { $('#b-dl').click(); return; }
     const dest = PH.cleanPath($('#b-dest').value);
-    if (!dest) { PH.showErr('#b-error', 'Wpisz folder docelowy, na przykład E:\\Backupy.'); $('#b-dest').focus(); return; }
-    if (!ids.length) { PH.showErr('#b-error', 'Zaznacz co najmniej jeden projekt.'); return; }
+    if (!dest) { PH.showErr('#b-error', 'Enter the destination folder, e.g. E:\\Backups.'); $('#b-dest').focus(); return; }
+    if (!ids.length) { PH.showErr('#b-error', 'Select at least one project.'); return; }
     PH.showErr('#b-error', '');
     const btn = $('#b-go');
-    btn.disabled = true; btn.textContent = 'Tworzenie archiwów…';
+    btn.disabled = true; btn.textContent = 'Creating archives…';
     try {
       const r = await PH.api.backup(ids, dest, PH.settings.backupExclude);
-      try { localStorage.setItem('ph_backup_dest', dest); } catch (err) { /* j.w. */ }
+      try { localStorage.setItem('ph_backup_dest', dest); } catch (err) { /* ditto */ }
       const results = r.results || [];
       results.forEach(x => { const p = PH.find(x.id); if (x.ok && p) p.backedUpAt = x.backedUpAt || new Date().toISOString(); });
       PH.dataChanged();
@@ -702,31 +702,31 @@
         const p = PH.find(x.id);
         const name = p ? p.name : x.id;
         return x.ok
-          ? '<li><strong>' + esc(name) + ' <span class="ok">gotowe</span></strong><code>' + esc(x.file) + '</code></li>'
-          : '<li class="fail"><strong>' + esc(name) + ' <span class="bad">błąd</span></strong><span>' + esc(x.error || 'Nie udało się utworzyć archiwum.') + '</span></li>';
+          ? '<li><strong>' + esc(name) + ' <span class="ok">done</span></strong><code>' + esc(x.file) + '</code></li>'
+          : '<li class="fail"><strong>' + esc(name) + ' <span class="bad">error</span></strong><span>' + esc(x.error || 'Could not create the archive.') + '</span></li>';
       }).join('') + '</ul>';
       $('#b-results').scrollIntoView({ block: 'nearest' });
-      PH.toast('Utworzono ' + okN + ' z ' + results.length + ' ' + plural(results.length, 'archiwum', 'archiwów', 'archiwów'), okN < results.length ? 'error' : undefined);
+      PH.toast('Created ' + okN + ' of ' + results.length + ' ' + plural(results.length, 'archive', 'archives', 'archives'), okN < results.length ? 'error' : undefined);
       if (okN) { const rc = btn.getBoundingClientRect(); PH.confetti(rc.left + rc.width / 2, rc.top); }
     } catch (err) { PH.showErr('#b-error', err.message); }
-    finally { btn.disabled = false; btn.textContent = 'Zapisz do folderu'; }
+    finally { btn.disabled = false; btn.textContent = 'Save to folder'; }
   });
 
-  /* ---------- rozmiary projektów (ranking) ---------- */
+  /* ---------- project sizes (ranking) ---------- */
 
   function paintSizes(animate) {
     const live = S.projects.filter(p => !p.archived && p.sizeBytes).sort((a, b) => b.sizeBytes - a.sizeBytes);
     const total = live.reduce((s, p) => s + p.sizeBytes, 0);
     const max = live.length ? live[0].sizeBytes : 1;
     $('#sizesBody').innerHTML = live.length
-      ? '<p class="size-total"><strong>' + PH.fmtSize(total) + '</strong> w ' + live.length + ' ' + plural(live.length, 'projekcie', 'projektach', 'projektach') + '</p>' +
+      ? '<p class="size-total"><strong>' + PH.fmtSize(total) + '</strong> across ' + live.length + ' ' + plural(live.length, 'project', 'projects', 'projects') + '</p>' +
         '<ol class="size-list">' + live.map((p, i) =>
-          '<li><button type="button" class="size-row" data-id="' + esc(p.id) + '" title="' + esc(p.name + ': ' + PH.fmtSize(p.sizeBytes) + ' (' + Math.round(p.sizeBytes / total * 100) + '% całości)') + '">' +
+          '<li><button type="button" class="size-row" data-id="' + esc(p.id) + '" title="' + esc(p.name + ': ' + PH.fmtSize(p.sizeBytes) + ' (' + Math.round(p.sizeBytes / total * 100) + '% of total)') + '">' +
           '<span class="size-name">' + esc(p.name) + '</span>' +
           '<span class="size-bar"><i style="--w:' + (p.sizeBytes / max * 100).toFixed(1) + '%;--d:' + (animate ? i * 55 : 0) + 'ms"></i></span>' +
           '<span class="size-val">' + PH.fmtSize(p.sizeBytes) + '</span></button></li>').join('') + '</ol>'
-      : '<p class="lead">Nie znam jeszcze rozmiarów folderów. Naciśnij „Przelicz rozmiary”.</p>';
-    $('#sizesHint').textContent = 'Największe projekty najłatwiej zarchiwizować lub przenieść na dysk zewnętrzny.';
+      : '<p class="lead">Folder sizes are not known yet. Press “Recalculate sizes”.</p>';
+    $('#sizesHint').textContent = 'The largest projects are the easiest ones to back up or move to an external drive.';
     requestAnimationFrame(() => $('#sizesBody').classList.add('go'));
   }
   PH.openSizes = function () {
@@ -736,7 +736,7 @@
   };
   $('#sizesGo').addEventListener('click', async () => {
     const btn = $('#sizesGo');
-    await PH.withBusy(btn, 'Liczenie…', async () => {
+    await PH.withBusy(btn, 'Counting…', async () => {
       const r = await PH.api.refreshSizes();
       S.projects.forEach(p => { if (r.sizes && r.sizes[p.id] != null) p.sizeBytes = r.sizes[p.id]; });
       $('#sizesBody').classList.remove('go');

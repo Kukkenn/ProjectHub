@@ -1,4 +1,4 @@
-"""Konta użytkowników: tworzenie (z projektem-przewodnikiem), zmiana hasła, usuwanie."""
+"""User accounts: creation (with a guide project), password changes, deletion."""
 import datetime
 import json
 import os
@@ -25,23 +25,23 @@ def now_iso():
 
 def check_credentials(username, password):
     if not USERNAME_RE.match(username):
-        raise AccountError("Login ma 3 do 40 znaków: litery, cyfry, kropka, myślnik lub podkreślenie.")
+        raise AccountError("Username must be 3 to 40 characters: letters, digits, dots, hyphens or underscores.")
     check_password(password)
 
 
 def check_password(password):
     if len(password) < 8:
-        raise AccountError("Hasło jest za krótkie. Użyj co najmniej 8 znaków.")
+        raise AccountError("Password is too short. Use at least 8 characters.")
     if len(password) > 200:
-        raise AccountError("Hasło jest za długie.")
+        raise AccountError("Password is too long.")
 
 
 def seed_guide(user_id):
-    """Każde nowe konto dostaje projekt-przewodnik: strony w bazie i pliki .md w folderze projektu."""
+    """Every new account gets a guide project: pages in the DB and .md files in the project folder."""
     pid = "przewodnik-%d" % user_id
     folder = db.ws_dir(user_id, pid)
     os.makedirs(folder, exist_ok=True)
-    readme = ["# %s\n" % guide.PROJECT_NAME, guide.DESCRIPTION + "\n", "## Spis stron\n"]
+    readme = ["# %s\n" % guide.PROJECT_NAME, guide.DESCRIPTION + "\n", "## Table of contents\n"]
     size = 0
     for n, (page_id, title, text) in enumerate(guide.PAGES, 1):
         fn = "%02d-%s.md" % (n, page_id)
@@ -66,17 +66,17 @@ def seed_guide(user_id):
 
 
 def create_user(username, password, only_first=False):
-    """Zwraca id nowego konta. only_first: tylko gdy nie ma jeszcze żadnych kont."""
+    """Returns the id of the new account. only_first: only when no accounts exist yet."""
     username = (username or "").strip()
     check_credentials(username, password)
     ph = security.hash_password(password)
     with db.transaction():
         if only_first and db.one("SELECT 1 FROM users LIMIT 1"):
-            raise AccountError("Rejestracja jest wyłączona. Poproś administratora o konto.", 403)
+            raise AccountError("Registration is closed. Ask an administrator to create an account for you.", 403)
         try:
             cur = db.run("INSERT INTO users (username, pw_hash, created_at) VALUES (?,?,?)", (username, ph, now_iso()))
         except sqlite3.IntegrityError:
-            raise AccountError("Taki login już istnieje. Wybierz inny.", 409)
+            raise AccountError("That username is already taken. Pick a different one.", 409)
         uid = cur.lastrowid
         seed_guide(uid)
     return uid
@@ -88,7 +88,7 @@ def set_password(user_id, new_password):
 
 
 def delete_user(user_id):
-    """Usuwa konto razem z projektami i ich plikami w ProjectHub. Pliki z dysku (projekty lokalne) zostają."""
-    db.run("DELETE FROM users WHERE id = ?", (user_id,))  # kaskadowo: projekty i sesje
+    """Deletes the account along with its projects and their files in ProjectHub. Files on disk (local projects) stay."""
+    db.run("DELETE FROM users WHERE id = ?", (user_id,))  # projects and sessions go down with the account (ON DELETE CASCADE)
     for sub in ("workspaces", "uploads", "guide"):
         shutil.rmtree(os.path.join(db.DATA_DIR, sub, str(user_id)), ignore_errors=True)

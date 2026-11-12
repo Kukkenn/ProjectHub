@@ -1,4 +1,4 @@
-"""SQLite: konta, sesje i projekty."""
+"""SQLite: accounts, sessions and projects."""
 import json
 import os
 import sys
@@ -9,7 +9,7 @@ BASE = os.path.dirname(os.path.abspath(__file__))
 def _data_dir():
     if os.environ.get("PROJECTHUB_DATA"):
         return os.environ["PROJECTHUB_DATA"]
-    if getattr(sys, "frozen", False):       # spakowany serwer: dane obok pliku .exe, nie w folderze tymczasowym
+    if getattr(sys, "frozen", False):       # in a packaged .exe we keep data next to it — Windows cleans temp whenever it feels like it
         return os.path.join(os.path.dirname(sys.executable), "data")
     return os.path.join(os.path.dirname(BASE), "data")
 
@@ -82,7 +82,8 @@ def conn():
         have = {r["name"] for r in _conn.execute("PRAGMA table_info(projects)")}
         for name, ddl in (("storage", "TEXT NOT NULL DEFAULT 'local'"), ("icon", "TEXT NOT NULL DEFAULT ''"),
                           ("color", "TEXT NOT NULL DEFAULT ''")):
-            if name not in have:  # migracja baz z wcześniejszych wersji
+            if name not in have:  # older databases may be missing these columns
+
                 _conn.execute("ALTER TABLE projects ADD COLUMN %s %s" % (name, ddl))
         try:
             os.chmod(DB_PATH, 0o600)
@@ -122,7 +123,7 @@ def transaction():
 
 
 def ws_dir(uid, pid):
-    """Folder z plikami projektu przechowywanego w ProjectHub."""
+    """Folder holding files of a project stored in ProjectHub."""
     return os.path.join(DATA_DIR, "workspaces", str(uid), pid)
 
 

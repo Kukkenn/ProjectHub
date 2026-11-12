@@ -1,13 +1,13 @@
-/* md.js: mały, bezpieczny renderer Markdowna (nagłówki, listy, zadania, tabele, cytaty,
-   wyróżnienia [!NOTE], bloki kodu z podświetlaniem). Cały tekst jest najpierw escapowany,
-   więc wklejony HTML nigdy się nie wykona. */
+/* md.js: a small, safe Markdown renderer (headings, lists, tasks, tables, quotes,
+   [!NOTE] callouts, code blocks with highlighting). All text is escaped first,
+   so pasted HTML never executes. */
 (function () {
   'use strict';
   const PH = (window.PH = window.PH || {});
 
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-  /* ---------- podświetlanie kodu ---------- */
+  /* ---------- code highlighting ---------- */
 
   const KW = {
     py: 'def|class|return|if|elif|else|for|while|import|from|as|with|try|except|finally|raise|in|not|and|or|is|None|True|False|lambda|pass|break|continue|yield|async|await',
@@ -40,8 +40,8 @@
   }
 
   function codeBlock(code, lang) {
-    return '<div class="code"><div class="code-head"><span>' + esc(lang || 'tekst') + '</span>' +
-      '<button type="button" class="code-copy" data-copy>Kopiuj</button></div>' +
+    return '<div class="code"><div class="code-head"><span>' + esc(lang || 'text') + '</span>' +
+      '<button type="button" class="code-copy" data-copy>Copy</button></div>' +
       '<pre><code>' + highlight(code, lang) + '</code></pre></div>';
   }
 
@@ -62,9 +62,9 @@
   }
 
   const slugify = t => String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/ł/g, 'l')
-    .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'sekcja';
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'section';
 
-  const CALLOUT = { NOTE: 'Notatka', TIP: 'Wskazówka', WARNING: 'Uwaga', IMPORTANT: 'Ważne' };
+  const CALLOUT = { NOTE: 'Note', TIP: 'Tip', WARNING: 'Warning', IMPORTANT: 'Important' };
 
   /* ---------- bloki ---------- */
 

@@ -1,4 +1,4 @@
-/* palette.js: paleta poleceń (Ctrl+K): projekty, polecenia uruchomienia, dokumentacja i akcje. */
+/* palette.js: command palette (Ctrl+K): projects, run commands, docs and actions. */
 (function () {
   'use strict';
   const PH = window.PH;
@@ -6,27 +6,27 @@
   const S = PH.state;
 
   const dlg = $('#paletteDlg'), input = $('#palInput'), listEl = $('#palList');
-  const GROUPS = ['Akcje', 'Przejdź do', 'Projekty', 'Uruchom', 'Dokumentacja', 'Archiwum'];
+  const GROUPS = ['Actions', 'Go to', 'Projects', 'Run', 'Docs', 'Archive'];
   let items = [], shown = [], sel = 0;
 
   function build() {
     const out = [];
     const add = (group, label, ic, run, sub, kw) => out.push({ group, label, ic, run, sub: sub || '', hay: norm(label + ' ' + (sub || '') + ' ' + (kw || '')), nlabel: norm(label) });
 
-    add('Akcje', 'Dodaj projekt', 'plus', () => PH.openForm(null), 'Ręcznie wpisz nazwę i ścieżkę', 'nowy utworz');
-    add('Akcje', 'Skanuj folder', 'scan', () => PH.openScan(), 'Znajdź projekty na Pulpicie lub dysku', 'import pulpit');
-    add('Akcje', 'Zrób backup', 'backup', () => PH.openBackup(), 'Spakuj projekty do ZIP', 'kopia zapasowa archiwum zip');
-    add('Akcje', 'Pokaż rozmiary projektów', 'disk', () => PH.openSizes(), 'Ranking największych folderów', 'dysk miejsce');
-    add('Akcje', PH.settings.nav === 'top' ? 'Przenieś menu na bok' : 'Przenieś menu na górę', 'sliders', () => PH.setSetting('nav', PH.settings.nav === 'top' ? 'side' : 'top'), 'Położenie głównej nawigacji', 'nawigacja ustawienia');
+    add('Actions', 'Add project', 'plus', () => PH.openForm(null), 'Type the name and path manually', 'nowy utworz');
+    add('Actions', 'Scan folder', 'scan', () => PH.openScan(), 'Find projects on the Desktop or disk', 'import pulpit');
+    add('Actions', 'Back up', 'backup', () => PH.openBackup(), 'Pack projects into a ZIP', 'kopia zapasowa archiwum zip');
+    add('Actions', 'Show project sizes', 'disk', () => PH.openSizes(), 'Ranking of the largest folders', 'dysk miejsce');
+    add('Actions', PH.settings.nav === 'top' ? 'Move the menu to the side' : 'Move the menu to the top', 'sliders', () => PH.setSetting('nav', PH.settings.nav === 'top' ? 'side' : 'top'), 'Position of the main navigation', 'nawigacja ustawienia');
 
-    [['Biblioteka', '#/', 'grid'], ['Zadania', '#/zadania', 'tasks'], ['Archiwum', '#/archiwum', 'archive'], ['Ustawienia', '#/ustawienia', 'sliders']]
-      .forEach(n => add('Przejdź do', n[0], n[2], () => PH.go(n[1])));
+    [['Library', '#/', 'grid'], ['Tasks', '#/zadania', 'tasks'], ['Archive', '#/archiwum', 'archive'], ['Settings', '#/ustawienia', 'sliders']]
+      .forEach(n => add('Go to', n[0], n[2], () => PH.go(n[1])));
 
     S.projects.forEach(p => {
-      const g = p.archived ? 'Archiwum' : 'Projekty';
+      const g = p.archived ? 'Archive' : 'Projects';
       add(g, p.name, 'folder', () => PH.go('#/projekt/' + p.id), p.category + ' · ' + PH.shortPath(p.path), [p.description, p.tech.join(' '), p.tags.join(' ')].join(' '));
-      p.commands.forEach(c => add('Uruchom', 'Uruchom: ' + c.label, 'play', () => PH.runCommand(p.id, c.id), p.name + ' · ' + c.cmd));
-      p.docs.forEach(d => add('Dokumentacja', d.title, 'book', () => PH.go('#/projekt/' + p.id + '/dokumentacja', { doc: d.id }), p.name));
+      p.commands.forEach(c => add('Run', 'Run: ' + c.label, 'play', () => PH.runCommand(p.id, c.id), p.name + ' · ' + c.cmd));
+      p.docs.forEach(d => add('Docs', d.title, 'book', () => PH.go('#/projekt/' + p.id + '/dokumentacja', { doc: d.id }), p.name));
     });
     return out;
   }
@@ -34,8 +34,8 @@
   function filter() {
     const q = norm(input.value.trim());
     if (!q) {
-      const recent = items.filter(i => i.group === 'Projekty').slice(0, 8);
-      return items.filter(i => i.group === 'Akcje' || i.group === 'Przejdź do').concat(recent)
+      const recent = items.filter(i => i.group === 'Projects').slice(0, 8);
+      return items.filter(i => i.group === 'Actions' || i.group === 'Go to').concat(recent)
         .sort((a, b) => GROUPS.indexOf(a.group) - GROUPS.indexOf(b.group));
     }
     const toks = q.split(/\s+/);
@@ -52,7 +52,7 @@
     shown = filter();
     if (sel >= shown.length) sel = Math.max(0, shown.length - 1);
     if (!shown.length) {
-      listEl.innerHTML = '<p class="pal-empty">Nic nie pasuje do „' + esc(input.value.trim()) + '”. Spróbuj nazwy projektu, technologii albo polecenia.</p>';
+      listEl.innerHTML = '<p class="pal-empty">Nothing matches “' + esc(input.value.trim()) + '”. Try a project name, a technology or a command.</p>';
       input.removeAttribute('aria-activedescendant');
       return;
     }

@@ -1,4 +1,4 @@
-"""Kopie zapasowe i pobieranie projektów: pliki + opis, notatki, dokumentacja, zadania."""
+"""Backups and project downloads: files + description, notes, docs, tasks."""
 import datetime
 import json
 import os
@@ -10,7 +10,7 @@ import fsutil
 
 INFO = "PROJECTHUB-INFO"
 STATES = {"todo": "[ ]", "doing": "[~]", "done": "[x]"}
-STATUS = {"idea": "Pomysł", "active": "W toku", "paused": "Wstrzymany", "done": "Skończony"}
+STATUS = {"idea": "Idea", "active": "In progress", "paused": "Paused", "done": "Done"}
 
 
 def info_readme(p):
@@ -18,27 +18,27 @@ def info_readme(p):
     if p.get("description"):
         L += [p["description"], ""]
     L += ["| | |", "|---|---|", "| Status | %s |" % STATUS.get(p.get("status"), p.get("status")),
-          "| Kategoria | %s |" % p.get("category", "")]
+          "| Category | %s |" % p.get("category", "")]
     if p.get("tech"):
-        L.append("| Technologie | %s |" % ", ".join(p["tech"]))
+        L.append("| Technologies | %s |" % ", ".join(p["tech"]))
     if p.get("tags"):
-        L.append("| Tagi | %s |" % ", ".join(p["tags"]))
+        L.append("| Tags | %s |" % ", ".join(p["tags"]))
     if p.get("path"):
-        L.append("| Oryginalna ścieżka | `%s` |" % p["path"])
+        L.append("| Original path | `%s` |" % p["path"])
     L.append("")
     if p.get("commands"):
-        L += ["## Polecenia", ""] + ["- **%s**: `%s`" % (c["label"], c["cmd"]) for c in p["commands"]] + [""]
+        L += ["## Commands", ""] + ["- **%s**: `%s`" % (c["label"], c["cmd"]) for c in p["commands"]] + [""]
     if p.get("tasks"):
-        L += ["## Zadania", ""] + ["- %s %s" % (STATES.get(t["state"], "[ ]"), t["text"]) for t in p["tasks"]] + [""]
+        L += ["## Tasks", ""] + ["- %s %s" % (STATES.get(t["state"], "[ ]"), t["text"]) for t in p["tasks"]] + [""]
     if p.get("notes", "").strip():
-        L += ["## Notatki", "", p["notes"].rstrip(), ""]
+        L += ["## Notes", "", p["notes"].rstrip(), ""]
     if p.get("docs"):
-        L += ["## Dokumentacja", ""] + ["%d. %s (plik w folderze `dokumentacja`)" % (n, d["title"]) for n, d in enumerate(p["docs"], 1)] + [""]
+        L += ["## Documentation", ""] + ["%d. %s (file in the `dokumentacja` folder)" % (n, d["title"]) for n, d in enumerate(p["docs"], 1)] + [""]
     return "\n".join(L)
 
 
 def info_entries(p, images):
-    """Lista (nazwa w archiwum, bajty | ścieżka pliku) z opisami projektu."""
+    """List of (name in the archive, bytes | file path) with the project's metadata."""
     meta = {k: v for k, v in p.items() if k not in ("images", "sizeBytes")}
     meta["images"] = [i["name"] for i in p.get("images", [])]
     out = [(INFO + "/projekt.json", json.dumps(meta, ensure_ascii=False, indent=2).encode("utf-8")),
@@ -73,7 +73,7 @@ def write_project(z, prefix, root, exclude, p, images, skip_dir=None):
 
 
 def build_zip(items, exclude, dest_dir=None, skip_dir=None):
-    """items: [(project_dict, root|None, [(nazwa, ścieżka)])]. Zwraca ścieżkę do pliku .zip (tymczasowego)."""
+    """items: [(project_dict, root|None, [(name, path)])]. Returns the path to a (temporary) .zip file."""
     fd, tmp = tempfile.mkstemp(suffix=".part", dir=dest_dir)
     os.close(fd)
     used = set()
@@ -104,7 +104,7 @@ def backup_to_folder(item, destination, exclude):
     p, root, images = item
     destination = os.path.expanduser((destination or "").strip().strip("\"'"))
     if not destination or not os.path.isabs(destination):
-        raise fsutil.FsError("Podaj pełną ścieżkę folderu docelowego, na przykład E:\\Backupy.")
+        raise fsutil.FsError("Provide the full path to the destination folder, for example E:\\Backups.")
     os.makedirs(destination, exist_ok=True)
     dest = os.path.realpath(destination)
     base = dated_name(fsutil.slug(p["name"]))

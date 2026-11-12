@@ -1,4 +1,4 @@
-"""ProjectHub: serwer (FastAPI + SQLite). Tryb lokalny słucha tylko na 127.0.0.1; tryb hosted jest dla serwera z HTTPS."""
+"""ProjectHub: the server (FastAPI + SQLite). Local mode listens only on 127.0.0.1; hosted mode is for a server with HTTPS."""
 import hashlib
 import hmac
 import json
@@ -30,7 +30,7 @@ BASE = os.path.dirname(os.path.abspath(__file__))
 def _find_static():
     if os.environ.get("PROJECTHUB_STATIC"):
         return os.environ["PROJECTHUB_STATIC"]
-    if getattr(sys, "frozen", False):       # spakowany serwer: folder static leży obok pliku .exe
+    if getattr(sys, "frozen", False):       # packaged server: the static folder sits next to the .exe
         near = os.path.join(os.path.dirname(sys.executable), "static")
         if os.path.isdir(near):
             return near
@@ -62,7 +62,7 @@ def fs_fail(e):
     return fail(e.status, e.message)
 
 
-# ------------------------------------------------------------------ zabezpieczenia
+# ------------------------------------------------------------------ security
 
 CSP = ("default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
        "font-src https://fonts.gstatic.com; script-src 'self'; connect-src 'self'; frame-src 'self'; "
@@ -82,15 +82,15 @@ def host_ok(request):
 @app.middleware("http")
 async def guard(request: Request, call_next):
     if request.url.path != "/api/health" and not host_ok(request):
-        return JSONResponse({"detail": "Niedozwolony adres hosta."}, status_code=400)
+        return JSONResponse({"detail": "Invalid host address."}, status_code=400)
     if request.method not in ("GET", "HEAD", "OPTIONS"):
         origin = request.headers.get("origin")
         if origin:
             if origin == "null" or re.sub(r"^https?://", "", origin).lower() != (request.headers.get("host") or "").lower():
-                return JSONResponse({"detail": "Żądanie z innego źródła zostało odrzucone."}, status_code=403)
+                return JSONResponse({"detail": "Cross-origin request rejected."}, status_code=403)
         try:
             if int(request.headers.get("content-length") or 0) > MAX_BATCH + MAX_JSON:
-                return JSONResponse({"detail": "Żądanie jest za duże."}, status_code=413)
+                return JSONResponse({"detail": "Request is too large."}, status_code=413)
         except ValueError:
             pass
     resp = await call_next(request)
@@ -118,14 +118,14 @@ async def body(request: Request):
     try:
         raw = await request.body()
         if len(raw) > MAX_JSON:
-            raise fail(413, "Dane są za duże.")
+            raise fail(413, "Payload is too large.")
         data = json.loads(raw or b"{}")
     except HTTPException:
         raise
     except ValueError:
-        raise fail(400, "Nieprawidłowe dane (oczekiwano JSON).")
+        raise fail(400, "Invalid data (expected JSON).")
     if not isinstance(data, dict):
-        raise fail(400, "Nieprawidłowe dane (oczekiwano obiektu JSON).")
+        raise fail(400, "Invalid data (expected a JSON object).")
     return data
 
 
@@ -144,14 +144,14 @@ def current_session(request: Request):
 
 
 def auth(request: Request):
-    """Wymaga zalogowania; przy zapisie sprawdza token CSRF."""
+    """Requires being logged in; checks the CSRF token on writes."""
     s = current_session(request)
     if not s:
-        raise fail(401, "Zaloguj się, żeby kontynuować.")
+        raise fail(401, "Log in to continue.")
     if request.method not in ("GET", "HEAD", "OPTIONS"):
         sent = request.headers.get("x-csrf-token") or ""
         if not hmac.compare_digest(sent.encode(), s["csrf"].encode()):
-            raise fail(403, "Nieprawidłowy token zabezpieczający. Odśwież stronę i spróbuj ponownie.")
+            raise fail(403, "Invalid security token. Refresh the page and try again.")
     return s
 
 
@@ -171,7 +171,7 @@ def start_session(request: Request, resp: Response, user_id: int):
     resp.set_cookie("csrf_token", csrf, max_age=age, httponly=False, samesite="strict", path="/", secure=secure)
 
 
-# ------------------------------------------------------------------ konto
+# ------------------------------------------------------------------ account
 
 def usage_of(uid):
     managed = db.one("SELECT COALESCE(SUM(size_bytes), 0) AS n FROM projects WHERE user_id = ? AND storage = 'managed'", (uid,))["n"]
@@ -195,14 +195,14 @@ async def get_settings(request: Request):
 
 @app.put("/api/settings")
 async def put_settings(request: Request):
-    """Ustawienia wyglądu i zachowania zapisane przy koncie (przeżywają zmianę portu i przeglądarki)."""
+    """Appearance and behavior settings stored with the account (they survive a port or browser change)."""
     s = auth(request)
     data = (await body(request)).get("settings")
     if not isinstance(data, dict) or len(data) > 60 or not all(isinstance(k, str) and len(k) <= 40 for k in data):
-        raise fail(400, "Niepoprawne ustawienia.")
+        raise fail(400, "Invalid settings.")
     raw = json.dumps(data, ensure_ascii=False)
     if len(raw) > 16000:
-        raise fail(400, "Ustawienia są za duże.")
+        raise fail(400, "Settings payload is too large.")
     db.run("INSERT INTO user_settings (user_id, data) VALUES (?, ?) ON CONFLICT(user_id) DO UPDATE SET data = excluded.data",
            (s["user_id"], raw))
     return {"ok": True}
@@ -225,7 +225,7 @@ async def register(request: Request):
     key = client_key(request)
     wait = reg_throttle.wait(key)
     if wait:
-        raise fail(429, "Za dużo prób zakładania kont. Spróbuj ponownie za %d s." % wait)
+        raise fail(429, "Too many account creation attempts. Try again in %d s." % wait)
     reg_throttle.fail(key)
     try:
         uid = await run_in_threadpool(accounts.create_user, str(d.get("username") or ""), str(d.get("password") or ""),
@@ -238,7 +238,7 @@ async def register(request: Request):
 
 
 app.post("/api/auth/register")(register)
-app.post("/api/auth/setup")(register)  # nazwa ze starszych wersji interfejsu
+app.post("/api/auth/setup")(register)  # old name from earlier UI versions, kept for compatibility
 
 
 @app.post("/api/auth/login")
@@ -249,13 +249,13 @@ async def auth_login(request: Request):
     ukey = "u:" + username.lower()
     wait = max(login_throttle.wait(key), user_throttle.wait(ukey))
     if wait:
-        raise fail(429, "Za dużo nieudanych prób. Spróbuj ponownie za %d s." % wait)
+        raise fail(429, "Too many failed attempts. Try again in %d s." % wait)
     u = db.one("SELECT * FROM users WHERE username = ?", (username,))
     ok = await run_in_threadpool(security.verify_password, password[:200], u["pw_hash"] if u else security.DUMMY_HASH)
     if not u or not ok:
         login_throttle.fail(key)
         user_throttle.fail(ukey)
-        raise fail(401, "Nieprawidłowy login lub hasło.")
+        raise fail(401, "Invalid username or password.")
     login_throttle.reset(key)
     user_throttle.reset(ukey)
     resp = JSONResponse({"ok": True, "username": u["username"]})
@@ -279,11 +279,11 @@ async def verify_current(request, s, password):
     ukey = "u:" + s["username"].lower()
     wait = user_throttle.wait(ukey)
     if wait:
-        raise fail(429, "Za dużo nieudanych prób. Spróbuj ponownie za %d s." % wait)
+        raise fail(429, "Too many failed attempts. Try again in %d s." % wait)
     u = db.one("SELECT * FROM users WHERE id = ?", (s["user_id"],))
     if not await run_in_threadpool(security.verify_password, str(password or "")[:200], u["pw_hash"]):
         user_throttle.fail(ukey)
-        raise fail(403, "Hasło jest nieprawidłowe.")
+        raise fail(403, "Password is incorrect.")
     user_throttle.reset(ukey)
 
 
@@ -312,7 +312,7 @@ async def delete_account(request: Request):
     return resp
 
 
-# ------------------------------------------------------------------ projekty
+# ------------------------------------------------------------------ projects
 
 COLS = {"name": "name", "path": "path", "description": "description", "notes": "notes", "category": "category",
         "status": "status", "favorite": "favorite", "archived": "archived", "tech": "tech", "tags": "tags",
@@ -322,7 +322,7 @@ COLS = {"name": "name", "path": "path", "description": "description", "notes": "
 def get_row(uid, pid):
     r = db.one("SELECT * FROM projects WHERE id = ? AND user_id = ?", (pid, uid))
     if not r:
-        raise fail(404, "Nie znaleziono projektu.")
+        raise fail(404, "Project not found.")
     return r
 
 
@@ -335,23 +335,23 @@ def new_id():
 
 
 def root_of(r):
-    """Folder z plikami projektu: w ProjectHub (managed) albo wskazany ścieżką (local, tylko tryb lokalny)."""
+    """Project files folder: in ProjectHub (managed) or pointed to by a path (local, local mode only)."""
     if r["storage"] == "managed":
         d = db.ws_dir(r["user_id"], r["id"])
         os.makedirs(d, exist_ok=True)
         return os.path.realpath(d)
-    need("localPaths", "Projekty wskazujące folder na dysku są wyłączone w trybie serwera. Prześlij pliki do ProjectHub.")
+    need("localPaths", "Projects pointing to a folder on disk are disabled in server mode. Upload the files to ProjectHub instead.")
     return fsutil.project_root(r["path"])
 
 
 def require_managed(r):
     if r["storage"] != "managed":
-        raise fail(400, "To działa tylko dla projektów przechowywanych w ProjectHub (nie dla folderu wskazanego ścieżką).")
+        raise fail(400, "This only works for projects stored in ProjectHub (not for folders pointed to by a path).")
 
 
 def check_quota(uid, extra=0):
     if config.QUOTA and usage_of(uid) + extra > config.QUOTA:
-        raise fail(413, "Przekroczono limit miejsca na dane (%d MB)." % (config.QUOTA // config.MB))
+        raise fail(413, "Storage quota exceeded (%d MB)." % (config.QUOTA // config.MB))
 
 
 def refresh_size(r):
@@ -382,7 +382,7 @@ async def reorder(request: Request):
     s = auth(request)
     ids = (await body(request)).get("ids")
     if not isinstance(ids, list) or not all(isinstance(i, str) for i in ids):
-        raise fail(400, "Nieprawidłowa lista projektów.")
+        raise fail(400, "Invalid project list.")
     mine = {r["id"] for r in db.query("SELECT id FROM projects WHERE user_id = ?", (s["user_id"],))}
     order = [i for i in dict.fromkeys(ids) if i in mine]
     order += sorted(mine - set(order))
@@ -397,12 +397,12 @@ async def create_project(request: Request):
     s = auth(request)
     data = await body(request)
     if db.one("SELECT COUNT(*) AS n FROM projects WHERE user_id = ?", (s["user_id"],))["n"] >= MAX_PROJECTS:
-        raise fail(400, "Osiągnięto limit %d projektów." % MAX_PROJECTS)
+        raise fail(400, "Reached the limit of %d projects." % MAX_PROJECTS)
     storage = data.get("storage")
     if storage not in ("local", "managed"):
         storage = "local" if (data.get("path") and config.FEATURES["localPaths"]) else "managed"
     if storage == "local":
-        need("localPaths", "Projekty wskazujące folder na dysku są wyłączone w trybie serwera. Prześlij pliki do ProjectHub.")
+        need("localPaths", "Projects pointing to a folder on disk are disabled in server mode. Upload the files to ProjectHub instead.")
     try:
         f = clean_project(data, partial=False, require_path=(storage == "local"))
     except ValueError as e:
@@ -444,8 +444,8 @@ async def delete_project(request: Request, pid: str):
     s = auth(request)
     r = get_row(s["user_id"], pid)
     if r["is_guide"]:
-        raise fail(400, "Przewodnika nie można usunąć. Jeśli Ci przeszkadza, przenieś go do archiwum.")
-    # Pliki wskazane ścieżką (projekty lokalne) zostają nietknięte. Usuwamy wpis oraz kopie przechowywane w ProjectHub.
+        raise fail(400, "The guide can't be deleted. If it's in the way, move it to the archive.")
+    # path-based projects (on disk) we leave alone — we only delete our DB entry and our copies
     db.run("DELETE FROM projects WHERE id = ? AND user_id = ?", (pid, s["user_id"]))
     import shutil
     shutil.rmtree(os.path.join(db.DATA_DIR, "uploads", str(s["user_id"]), pid), ignore_errors=True)
@@ -456,39 +456,39 @@ async def delete_project(request: Request, pid: str):
 @app.post("/api/projects/{pid}/run")
 async def run_project(request: Request, pid: str):
     s = auth(request)
-    need("run", "Uruchamianie poleceń jest wyłączone w trybie serwera.")
+    need("run", "Running commands is disabled in server mode.")
     r = get_row(s["user_id"], pid)
     cid = (await body(request)).get("commandId")
     cmd = next((c for c in json.loads(r["commands"]) if c["id"] == cid), None)
     if not cmd:
-        raise fail(404, "Nie ma takiego polecenia w tym projekcie.")
+        raise fail(404, "There's no such command in this project.")
     try:
         fsutil.run_command(cmd["cmd"], root_of(r))
     except fsutil.FsError as e:
         raise fs_fail(e)
     except OSError as e:
-        raise fail(500, "Nie udało się uruchomić polecenia: %s" % e)
-    return {"message": "Uruchomiono „%s”." % cmd["label"]}
+        raise fail(500, "Failed to run the command: %s" % e)
+    return {"message": "Started “%s”." % cmd["label"]}
 
 
 @app.post("/api/projects/{pid}/open")
 async def open_project(request: Request, pid: str):
     s = auth(request)
-    need("openFolder", "Otwieranie folderów jest wyłączone w trybie serwera.")
+    need("openFolder", "Opening folders is disabled in server mode.")
     r = get_row(s["user_id"], pid)
     try:
         full = fsutil.safe_join(root_of(r), str((await body(request)).get("path") or ""))
         if not os.path.isdir(full):
-            raise fsutil.FsError("To nie jest folder.")
+            raise fsutil.FsError("This is not a folder.")
         fsutil.open_in_explorer(full)
     except fsutil.FsError as e:
         raise fs_fail(e)
     except OSError as e:
-        raise fail(500, "Nie udało się otworzyć folderu: %s" % e)
-    return {"message": "Otwarto folder w Eksploratorze."}
+        raise fail(500, "Failed to open the folder: %s" % e)
+    return {"message": "Folder opened in Explorer."}
 
 
-# ------------------------------------------------------------------ zdjęcia galerii
+# ------------------------------------------------------------------ gallery images
 
 SIGNATURES = [(b"\x89PNG\r\n\x1a\n", ".png", "image/png"), (b"\xff\xd8\xff", ".jpg", "image/jpeg"),
               (b"GIF87a", ".gif", "image/gif"), (b"GIF89a", ".gif", "image/gif")]
@@ -514,18 +514,18 @@ async def add_images(request: Request, pid: str):
     form = await request.form()
     files = [f for f in form.getlist("files") if hasattr(f, "read")]
     if not files:
-        raise fail(400, "Nie wybrano żadnych plików.")
+        raise fail(400, "No files were selected.")
     if len(files) > 12:
-        raise fail(400, "Naraz można dodać najwyżej 12 zdjęć.")
+        raise fail(400, "At most 12 images can be added at once.")
     imgs = json.loads(r["images"])
     if len(imgs) + len(files) > 40:
-        raise fail(400, "Projekt może mieć najwyżej 40 zdjęć.")
+        raise fail(400, "A project can have at most 40 images.")
     items = []
     for f in files:
         data = await f.read(MAX_IMG + 1)
         if len(data) > MAX_IMG:
-            raise fail(413, "Zdjęcie „%s” jest za duże (maksymalnie 8 MB)." % (f.filename or "plik"))
-        name = re.sub(r"[\x00-\x1f]", "", os.path.basename((f.filename or "").replace("\\", "/")))[:80] or "wklejone-zdjecie"
+            raise fail(413, "Image “%s” is too large (at most 8 MB)." % (f.filename or "file"))
+        name = re.sub(r"[\x00-\x1f]", "", os.path.basename((f.filename or "").replace("\\", "/")))[:80] or "pasted-image"
         items.append((name, data))
     check_quota(s["user_id"], sum(len(d) for _n, d in items))
     folder = os.path.join(db.DATA_DIR, "uploads", str(s["user_id"]), pid)
@@ -533,7 +533,7 @@ async def add_images(request: Request, pid: str):
     for name, data in items:
         kind = sniff(data)
         if not kind:
-            raise fail(400, "Plik „%s” nie jest obsługiwanym zdjęciem (PNG, JPG, WebP, GIF)." % name)
+            raise fail(400, "File “%s” is not a supported image (PNG, JPG, WebP, GIF)." % name)
         iid = secrets.token_hex(4)
         with open(os.path.join(folder, iid + kind[0]), "wb") as fh:
             fh.write(data)
@@ -546,7 +546,7 @@ def find_image(r, iid):
     imgs = json.loads(r["images"])
     img = next((i for i in imgs if i["id"] == iid), None)
     if not img:
-        raise fail(404, "Nie znaleziono zdjęcia.")
+        raise fail(404, "Image not found.")
     return imgs, img
 
 
@@ -582,12 +582,12 @@ async def media(request: Request, pid: str, iid: str):
     _imgs, img = find_image(r, iid)
     path = image_path(s["user_id"], pid, img)
     if not os.path.isfile(path):
-        raise fail(404, "Nie znaleziono zdjęcia.")
+        raise fail(404, "Image not found.")
     mime = {".png": "image/png", ".jpg": "image/jpeg", ".gif": "image/gif", ".webp": "image/webp"}.get(img.get("ext"), "application/octet-stream")
     return FileResponse(path, media_type=mime)
 
 
-# ------------------------------------------------------------------ pliki projektu
+# ------------------------------------------------------------------ project files
 
 @app.get("/api/projects/{pid}/files")
 async def project_files(request: Request, pid: str):
@@ -608,12 +608,12 @@ async def project_file(request: Request, pid: str):
     except fsutil.FsError as e:
         raise fs_fail(e)
     except OSError as e:
-        raise fail(500, "Nie udało się odczytać pliku: %s" % e)
+        raise fail(500, "Failed to read the file: %s" % e)
 
 
 @app.get("/api/projects/{pid}/raw")
 async def project_raw(request: Request, pid: str):
-    """Serwuje wyłącznie obrazy rastrowe z folderu projektu (bez SVG, który mógłby zawierać skrypty)."""
+    """Serves only raster images from the project folder (no SVG, which could contain scripts)."""
     s = auth(request)
     r = get_row(s["user_id"], pid)
     try:
@@ -622,7 +622,7 @@ async def project_raw(request: Request, pid: str):
         raise fs_fail(e)
     mime = fsutil.IMAGE_EXT.get(os.path.splitext(full)[1].lower())
     if not mime or not os.path.isfile(full):
-        raise fail(404, "Nie znaleziono obrazu.")
+        raise fail(404, "Image not found.")
     return FileResponse(full, media_type=mime, headers={"Content-Security-Policy": "sandbox"})
 
 
@@ -634,15 +634,15 @@ async def save_file(request: Request, pid: str):
     d = await body(request)
     content = d.get("content")
     if not isinstance(content, str) or len(content.encode("utf-8")) > 2 * 1024 * 1024:
-        raise fail(400, "Plik tekstowy może mieć najwyżej 2 MB.")
+        raise fail(400, "A text file can be at most 2 MB.")
     try:
         parts = fsutil.rel_parts(str(d.get("path") or ""))
         root = root_of(r)
         full = fsutil.safe_join(root, "/".join(parts))
         if any(p in fsutil.SKIP_DIRS for p in parts[:-1]):
-            raise fsutil.FsError("Ten folder jest pomijany w projektach.")
+            raise fsutil.FsError("This folder is skipped in projects.")
         if not os.path.exists(full) and fsutil.count_files(root) >= config.MAX_FILES:
-            raise fsutil.FsError("Projekt może mieć najwyżej %d plików." % config.MAX_FILES, 413)
+            raise fsutil.FsError("A project can have at most %d files." % config.MAX_FILES, 413)
     except fsutil.FsError as e:
         raise fs_fail(e)
     check_quota(s["user_id"], len(content.encode("utf-8")))
@@ -689,14 +689,14 @@ def do_upload(root, items, base_parts, budget):
         try:
             parts = base_parts + fsutil.rel_parts(name)
             if any(p in fsutil.SKIP_DIRS for p in parts[:-1]):
-                raise fsutil.FsError("pominięty folder")
+                raise fsutil.FsError("skipped folder")
             full = fsutil.safe_join(root, "/".join(parts))
         except fsutil.FsError:
             skipped += 1
             continue
         if not os.path.isfile(full):
             if count >= config.MAX_FILES:
-                err = "Projekt może mieć najwyżej %d plików." % config.MAX_FILES
+                err = "A project can have at most %d files." % config.MAX_FILES
                 break
             count += 1
         try:
@@ -715,7 +715,7 @@ def do_upload(root, items, base_parts, budget):
                 os.remove(full)
             except OSError:
                 pass
-            err = "Przekroczono limit miejsca na dane (%d MB)." % (config.QUOTA // config.MB)
+            err = "Storage quota exceeded (%d MB)." % (config.QUOTA // config.MB)
             saved -= 1
             break
     return saved, skipped, err
@@ -723,7 +723,7 @@ def do_upload(root, items, base_parts, budget):
 
 @app.post("/api/projects/{pid}/upload")
 async def upload(request: Request, pid: str):
-    """Wgrywa pliki (też całe foldery: pole `paths` niesie ścieżki względne) do projektu w ProjectHub."""
+    """Uploads files (whole folders too: the `paths` field carries relative paths) into a ProjectHub project."""
     s = auth(request)
     r = get_row(s["user_id"], pid)
     require_managed(r)
@@ -734,9 +734,9 @@ async def upload(request: Request, pid: str):
     except ValueError:
         paths = []
     if not files or not isinstance(paths, list) or len(paths) != len(files):
-        raise fail(400, "Nie wybrano plików albo lista ścieżek jest nieprawidłowa.")
+        raise fail(400, "No files selected or the path list is invalid.")
     if len(files) > 400:
-        raise fail(400, "Naraz można wgrać najwyżej 400 plików. Interfejs dzieli duże foldery automatycznie.")
+        raise fail(400, "At most 400 files can be uploaded at once. The UI splits large folders automatically.")
     try:
         base_parts = fsutil.rel_parts(str(form.get("base"))) if form.get("base") else []
     except fsutil.FsError as e:
@@ -752,14 +752,14 @@ async def upload(request: Request, pid: str):
 
 @app.post("/api/projects/{pid}/upload-zip")
 async def upload_zip(request: Request, pid: str):
-    """Rozpakowuje ZIP do projektu w ProjectHub (z ochroną przed zip-slip i bombami). Opcja restore=1 odtwarza opisy z kopii."""
+    """Unpacks a ZIP into a ProjectHub project (with zip-slip and bomb protection). restore=1 restores the metadata from a backup."""
     s = auth(request)
     r = get_row(s["user_id"], pid)
     require_managed(r)
     form = await request.form()
     f = form.get("file")
     if not f or not hasattr(f, "read"):
-        raise fail(400, "Nie wybrano pliku ZIP.")
+        raise fail(400, "No ZIP file selected.")
     os.makedirs(os.path.join(db.DATA_DIR, "tmp"), exist_ok=True)
     fd, tmp = tempfile.mkstemp(suffix=".zip", dir=os.path.join(db.DATA_DIR, "tmp"))
     os.close(fd)
@@ -778,7 +778,7 @@ async def upload_zip(request: Request, pid: str):
             await run_in_threadpool(refresh_size, r)
             raise fs_fail(e)
         except Exception:
-            raise fail(400, "To nie jest poprawny plik ZIP.")
+            raise fail(400, "This is not a valid ZIP file.")
     finally:
         try:
             os.remove(tmp)
@@ -787,8 +787,8 @@ async def upload_zip(request: Request, pid: str):
     if info and form.get("restore") == "1":
         try:
             meta = json.loads(info.decode("utf-8"))
-            # Nie przywracaj poleceń uruchamiania z obcego archiwum: zapisany
-            # backup mógł pochodzić od innej osoby, a „Uruchom” wykonuje kod.
+            # we deliberately don't restore run commands from someone else's archive —
+            # a backup may have been sent by someone else, and "Run" executes code
             keep = {k: meta[k] for k in ("description", "notes", "category", "tags", "tech", "status", "tasks", "docs",
                                           "icon", "color") if k in meta}
             if not config.FEATURES["run"]:
@@ -809,15 +809,15 @@ async def health():
 
 @app.post("/api/projects/{pid}/import-path")
 async def import_path(request: Request, pid: str):
-    """Kopiuje (albo przenosi) folder z dysku do projektu w ProjectHub. Tylko tryb lokalny."""
+    """Copies (or moves) a folder from disk into a ProjectHub project. Local mode only."""
     s = auth(request)
-    need("localPaths", "Import z dysku jest wyłączony w trybie serwera. Prześlij pliki przeglądarką.")
+    need("localPaths", "Import from disk is disabled in server mode. Upload the files through the browser instead.")
     r = get_row(s["user_id"], pid)
     require_managed(r)
     data = await body(request)
     src = str(data.get("from") or "").strip().strip('"')
     if not src:
-        raise fail(400, "Podaj folder, z którego mam skopiować pliki.")
+        raise fail(400, "Provide the folder to copy the files from.")
     move = bool(data.get("move"))
     root = root_of(r)
     budget = max(0, config.QUOTA - usage_of(s["user_id"])) if config.QUOTA else None
@@ -830,7 +830,7 @@ async def import_path(request: Request, pid: str):
     return {"project": db.row_to_project(get_row(s["user_id"], pid)), "saved": saved, "skipped": skipped, "removed": removed}
 
 
-# ------------------------------------------------------------------ podgląd na żywo
+# ------------------------------------------------------------------ live preview
 
 def secret_key():
     path = os.path.join(db.DATA_DIR, "secret.key")
@@ -872,7 +872,7 @@ def read_token(tok):
 
 @app.post("/api/projects/{pid}/preview")
 async def preview_start(request: Request, pid: str):
-    """Zwraca adres podglądu (token w ścieżce, żeby względne linki w stronie działały) i listę plików HTML."""
+    """Returns the preview address (token in the path so relative links in the page work) and the list of HTML files."""
     s = auth(request)
     r = get_row(s["user_id"], pid)
     try:
@@ -882,7 +882,7 @@ async def preview_start(request: Request, pid: str):
         if want:
             full = fsutil.safe_join(root, want)
             if not os.path.isfile(full):
-                raise fsutil.FsError("Nie znaleziono pliku.", 404)
+                raise fsutil.FsError("File not found.", 404)
             path = want.replace("\\", "/").strip("/")
         else:
             path = files[0] if files else ""
@@ -924,23 +924,23 @@ async def preview_redirect(request: Request, token: str):
 
 @app.get("/preview/{token}/{path:path}")
 async def preview_file(request: Request, token: str, path: str):
-    """Pliki projektu serwowane w piaskownicy (bez dostępu do ciasteczek i API aplikacji). Dostęp przez token z ograniczonym czasem."""
+    """Project files served inside a sandbox (no access to cookies or the app's API). Access via a time-limited token."""
     tok = read_token(token)
     if not tok:
-        return preview_page(403, "Link podglądu wygasł. Otwórz podgląd w ProjectHub ponownie.")
+        return preview_page(403, "The preview link has expired. Open the preview in ProjectHub again.")
     pid, uid = tok
     r = db.one("SELECT * FROM projects WHERE id = ? AND user_id = ?", (pid, uid))
     if not r:
-        return preview_page(404, "Nie znaleziono projektu.")
+        return preview_page(404, "Project not found.")
     try:
         root = root_of(r)
         full = fsutil.safe_join(root, path)
         if os.path.isdir(full):
             full = next((os.path.join(full, n) for n in ("index.html", "index.htm") if os.path.isfile(os.path.join(full, n))), full)
     except (fsutil.FsError, HTTPException):
-        return preview_page(404, "Nie znaleziono pliku.")
+        return preview_page(404, "File not found.")
     if not os.path.isfile(full):
-        return preview_page(404, "Nie znaleziono pliku <code>%s</code>. Dodaj <b>index.html</b> albo wybierz plik w podglądzie." % (
+        return preview_page(404, "File <code>%s</code> not found. Add an <b>index.html</b> or pick a file in the preview." % (
             re.sub(r"[<>&\"']", "", path) or "index.html"))
     ext = os.path.splitext(full)[1].lower()
     if ext in (".html", ".htm"):
@@ -950,7 +950,7 @@ async def preview_file(request: Request, token: str, path: str):
     return FileResponse(full, media_type=mime, headers=PREVIEW_HEADERS)
 
 
-# ------------------------------------------------------------------ rozmiary, skan, backup, dane
+# ------------------------------------------------------------------ sizes, scan, backup, data
 
 @app.post("/api/sizes")
 async def sizes(request: Request):
@@ -976,7 +976,7 @@ async def sizes(request: Request):
 @app.post("/api/scan")
 async def scan(request: Request):
     auth(request)
-    need("scan", "Skanowanie dysku jest wyłączone w trybie serwera. Prześlij foldery przyciskiem „Dodaj projekt”.")
+    need("scan", "Disk scanning is disabled in server mode. Upload folders with the “Add project” button instead.")
     try:
         return await run_in_threadpool(fsutil.scan, str((await body(request)).get("path") or ""))
     except fsutil.FsError as e:
@@ -993,19 +993,19 @@ def zip_item(r):
 @app.post("/api/backup")
 async def backup(request: Request):
     s = auth(request)
-    need("backupToPath", "Zapis na dysku serwera jest wyłączony w trybie serwera. Użyj pobierania ZIP.")
+    need("backupToPath", "Writing to the server's disk is disabled in server mode. Use ZIP download instead.")
     d = await body(request)
     ids, dest = d.get("ids"), d.get("destination")
     exclude = d.get("exclude") if isinstance(d.get("exclude"), list) else DEFAULT_EXCLUDE
     if not isinstance(ids, list) or not ids:
         raise fail(400, "Zaznacz co najmniej jeden projekt.")
     if not isinstance(dest, str) or not dest.strip():
-        raise fail(400, "Podaj folder docelowy.")
+        raise fail(400, "Provide the destination folder.")
     results = []
     for pid in [i for i in ids if isinstance(i, str)][:200]:
         r = db.one("SELECT * FROM projects WHERE id = ? AND user_id = ?", (pid, s["user_id"]))
         if not r:
-            results.append({"id": pid, "ok": False, "error": "Nie znaleziono projektu."})
+            results.append({"id": pid, "ok": False, "error": "Project not found."})
             continue
         try:
             target = await run_in_threadpool(lambda: export.backup_to_folder(zip_item(r), dest, exclude))
@@ -1017,7 +1017,7 @@ async def backup(request: Request):
         except HTTPException as e:
             results.append({"id": pid, "ok": False, "error": str(e.detail)})
         except OSError as e:
-            results.append({"id": pid, "ok": False, "error": "Nie udało się zapisać archiwum: %s" % e})
+            results.append({"id": pid, "ok": False, "error": "Failed to write the archive: %s" % e})
     return {"results": results}
 
 
@@ -1025,7 +1025,7 @@ async def zip_response(s, ids, name):
     rows = [db.one("SELECT * FROM projects WHERE id = ? AND user_id = ?", (i, s["user_id"])) for i in ids]
     rows = [r for r in rows if r]
     if not rows:
-        raise fail(404, "Nie znaleziono projektów.")
+        raise fail(404, "Projects not found.")
     try:
         tmp = await run_in_threadpool(lambda: export.build_zip([zip_item(r) for r in rows], DEFAULT_EXCLUDE))
     except fsutil.FsError as e:
@@ -1041,7 +1041,7 @@ async def backup_download(request: Request):
     s = auth(request)
     ids = [i for i in request.query_params.get("ids", "").split(",") if i][:200]
     if not ids:
-        raise fail(400, "Zaznacz co najmniej jeden projekt.")
+        raise fail(400, "Select at least one project.")
     return await zip_response(s, ids, export.dated_name("projecthub-backup") + ".zip")
 
 
@@ -1064,7 +1064,7 @@ async def import_data(request: Request):
     s = auth(request)
     projects = (await body(request)).get("projects")
     if not isinstance(projects, list) or len(projects) > 500:
-        raise fail(400, "Plik importu nie zawiera listy projektów (najwyżej 500).")
+        raise fail(400, "The import file doesn't contain a list of projects (at most 500).")
     n = 0
     with db.transaction():
         for raw in projects:
@@ -1074,12 +1074,12 @@ async def import_data(request: Request):
             try:
                 f = clean_project(raw, partial=False, require_path=(storage == "local"))
             except ValueError as e:
-                raise fail(400, "Projekt nr %d: %s" % (n + 1, e))
+                raise fail(400, "Project #%d: %s" % (n + 1, e))
             if storage == "local":
                 f["path"] = fsutil.normalize_project_path(f["path"])
             else:
                 f["path"] = ""
-            # Polecenia z importu (obcego pliku) nie wchodzą do nowego projektu.
+            # run commands from an imported file are skipped, they don't land in the fresh project
             f.pop("commands", None)
             f["storage"] = storage
             f = encode(f)
@@ -1098,7 +1098,7 @@ async def import_data(request: Request):
     return {"imported": n}
 
 
-# ------------------------------------------------------------------ błędy i pliki statyczne
+# ------------------------------------------------------------------ errors and static files
 
 @app.exception_handler(HTTPException)
 async def http_error(request: Request, exc: HTTPException):
@@ -1107,7 +1107,7 @@ async def http_error(request: Request, exc: HTTPException):
 
 @app.exception_handler(Exception)
 async def server_error(request: Request, exc: Exception):
-    return JSONResponse({"detail": "Błąd serwera. Szczegóły są w oknie, w którym działa ProjectHub."}, status_code=500)
+    return JSONResponse({"detail": "Server error. The details are in the window where ProjectHub is running."}, status_code=500)
 
 
 @app.get("/")

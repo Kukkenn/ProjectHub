@@ -1,4 +1,4 @@
-/* upload.js: zbieranie plików do wgrania (folder, pliki, przeciągnięcie, ZIP) i ich podsumowanie. */
+/* upload.js: collecting files to upload (folder, files, drag & drop, ZIP) and summarizing them. */
 (function () {
   'use strict';
   const PH = window.PH;
@@ -7,7 +7,7 @@
 
   function mb(n) { return PH.fmtSize(n); }
 
-  /* raw: [{file, path}] -> wybór gotowy do wgrania */
+  /* raw: [{file, path}] -> a selection ready to upload */
   function build(raw, extra) {
     const lim = PH.limits || {};
     const sel = { entries: [], zip: null, skippedDirs: [], tooBig: 0, junk: 0, bytes: 0, rootName: '' };
@@ -17,7 +17,7 @@
       return sel;
     }
     let items = raw.map(r => ({ file: r.file, path: String(r.path).replace(/\\/g, '/').replace(/^\/+/, '') }));
-    // wspólny folder główny (np. wybrany folder „moja-strona”) nie jest częścią projektu
+    // a shared root folder (e.g. the selected folder “my-site”) is not part of the project
     if (items.length && items.every(i => i.path.indexOf('/') > 0 && i.path.split('/')[0] === items[0].path.split('/')[0])) {
       const first = items[0].path.split('/')[0];
       sel.rootName = first;
@@ -35,25 +35,25 @@
     return sel;
   }
 
-  /* walidacja względem limitów serwera; zwraca tekst błędu albo '' */
+  /* validation against server limits; returns an error text or '' */
   function problem(sel) {
     const lim = PH.limits || {};
-    if (sel.zip && lim.maxZip && sel.zip.size > lim.maxZip) return 'Archiwum ZIP jest za duże (limit ' + mb(lim.maxZip) + ').';
-    if (lim.maxFiles && sel.entries.length > lim.maxFiles) return 'Za dużo plików: ' + sel.entries.length + ' (limit ' + lim.maxFiles + '). Zapakuj je do ZIP-a albo wybierz mniej.';
+    if (sel.zip && lim.maxZip && sel.zip.size > lim.maxZip) return 'The ZIP archive is too large (limit ' + mb(lim.maxZip) + ').';
+    if (lim.maxFiles && sel.entries.length > lim.maxFiles) return 'Too many files: ' + sel.entries.length + ' (limit ' + lim.maxFiles + '). Pack them into a ZIP or pick fewer.';
     if (lim.quota && sel.bytes > Math.max(0, lim.quota - (PH.usage || 0))) {
-      return 'Za mało wolnego miejsca: potrzeba ' + mb(sel.bytes) + ', zostało ' + mb(Math.max(0, lim.quota - (PH.usage || 0))) + '.';
+      return 'Not enough free space: need ' + mb(sel.bytes) + ', left ' + mb(Math.max(0, lim.quota - (PH.usage || 0))) + '.';
     }
     return '';
   }
 
   function describe(sel) {
     if (!sel) return '';
-    if (sel.zip) return 'Archiwum ZIP: ' + PH.esc(sel.zip.name) + ' (' + mb(sel.zip.size) + '). Rozpakuję je w projekcie.';
-    if (!sel.entries.length) return sel.skippedDirs.length || sel.tooBig ? 'Nie ma nic do wgrania.' : '';
-    let t = '<strong>' + sel.entries.length + '</strong> ' + PH.plural(sel.entries.length, 'plik', 'pliki', 'plików') + ', ' + mb(sel.bytes);
+    if (sel.zip) return 'ZIP archive: ' + PH.esc(sel.zip.name) + ' (' + mb(sel.zip.size) + '). I will unpack it into the project.';
+    if (!sel.entries.length) return sel.skippedDirs.length || sel.tooBig ? 'There is nothing to upload.' : '';
+    let t = '<strong>' + sel.entries.length + '</strong> ' + PH.plural(sel.entries.length, 'file', 'files', 'files') + ', ' + mb(sel.bytes);
     const notes = [];
-    if (sel.skippedDirs.length) notes.push('pominięto foldery: ' + sel.skippedDirs.map(PH.esc).join(', '));
-    if (sel.tooBig) notes.push(sel.tooBig + ' ' + PH.plural(sel.tooBig, 'plik jest za duży', 'pliki są za duże', 'plików jest za dużych'));
+    if (sel.skippedDirs.length) notes.push('skipped folders: ' + sel.skippedDirs.map(PH.esc).join(', '));
+    if (sel.tooBig) notes.push(sel.tooBig + ' ' + PH.plural(sel.tooBig, 'file is too large', 'files are too large', 'files are too large'));
     return t + (notes.length ? '. <span class="muted">' + notes.join('; ') + '.</span>' : '');
   }
 

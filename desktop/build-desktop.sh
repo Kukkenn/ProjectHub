@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Buduje aplikację desktopową (Linux/macOS). Wymaga: Python 3.10+, Rust (rustup), na Linuksie biblioteki webkit2gtk.
+# Builds the desktop app (Linux/macOS). Requires: Python 3.10+, Rust (rustup), and on Linux the webkit2gtk libraries.
 set -e
 cd "$(dirname "$0")"
 python3 -m venv .build-venv
@@ -13,4 +13,4 @@ cp -r ../static src-tauri/resources/static
 [ -f app-icon.png ] || python3 make-icon.py
 cargo install tauri-cli --version "^2" --locked || true
 (cd src-tauri && cargo tauri icon ../app-icon.png && cargo tauri build)
-echo "Gotowe: instalator jest w desktop/src-tauri/target/release/bundle/"
+echo "Done: the installer is in desktop/src-tauri/target/release/bundle/"
