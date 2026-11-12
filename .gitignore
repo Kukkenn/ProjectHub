@@ -20,6 +20,9 @@ obj/
 desktop/src-tauri/target/
 desktop/src-tauri/gen/
 
+# Local release artifacts (copied out for uploads, not part of the repo)
+release/
+
 # Tauri bundled resources (copied from top-level static at build time)
 desktop/src-tauri/resources/
 
