@@ -1,5 +1,5 @@
 # Replace with your own domain (the DNS record must point at the server). Caddy takes care of the HTTPS certificate itself.
-projekty.twojadomena.pl {
+projects.yourdomain.com {
 	encode gzip
 	request_body {
 		max_size 250MB

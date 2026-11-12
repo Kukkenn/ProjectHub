@@ -1,6 +1,6 @@
-/* ProjectHub: ciemny katalog projektów w kształcie szuflady z teczkami.
-   Kategorie to zakładki-przekładki nad szufladą, każda teczka ma okładkę
-   (pierwsze zdjęcie projektu albo inicjały w kolorze kategorii). */
+/* ProjectHub: dark project catalog shaped as a drawer of folders.
+   Categories are tab dividers above the drawer, every folder has a cover
+   (the first project photo or initials in the category color). */
 
 :root {
   --bg: #0E0C1A;
@@ -14,7 +14,7 @@
   --line: #322D5A;
   --line-2: #262248;
 
-  --signal: #FFB65C;     /* główna akcja: bursztyn */
+  --signal: #FFB65C;     /* main action: amber */
   --signal-d: #FFCB86;
   --on-signal: #261500;
   --accent2: #8E9BFF;    /* filtry: chabrowy */
@@ -24,7 +24,7 @@
   --old: #F2E072;
   --danger: #FF8FA3;
 
-  /* kolory zakładek kategorii: jasne, z ciemnym tekstem */
+  /* category tab colors: light, with dark text */
   --c0: #8E9BFF;
   --c1: #FFB65C;
   --c2: #FF8FA3;
@@ -98,7 +98,7 @@ img { display: block; max-width: 100%; }
 .icon-btn:hover { background: color-mix(in srgb, var(--ink) 9%, transparent); color: var(--ink); }
 .icon-btn svg { width: 18px; height: 18px; }
 
-/* ---------- pasek górny ---------- */
+/* ---------- top bar ---------- */
 
 .topbar {
   position: sticky; top: 0; z-index: 5;
@@ -160,7 +160,7 @@ img { display: block; max-width: 100%; }
 .sort { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-2); font-size: 14px; }
 .sort select { min-height: 38px; padding: 0 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--raised); color: var(--ink); }
 
-/* przekładki z kategoriami */
+/* category dividers */
 .rail {
   display: flex; align-items: flex-end; gap: 6px; overflow-x: auto; padding: 4px 2px 0;
   border-bottom: 2px solid var(--rail, var(--line)); scrollbar-width: thin;
@@ -255,7 +255,7 @@ img { display: block; max-width: 100%; }
 .bk-old { color: var(--old); }
 .bk-none { color: var(--danger); }
 
-/* jedyny ruch bez udziału użytkownika: teczki wskakują do szuflady przy pierwszym wczytaniu */
+/* the only autonomous motion: folders jump into the drawer on first load */
 .grid.settle .tile { animation: file-in 0.4s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; animation-delay: calc(min(var(--i), 12) * 45ms); }
 @keyframes file-in { from { opacity: 0; transform: translateY(-18px) rotate(-1.5deg); } }
 
@@ -418,7 +418,7 @@ dialog.lightbox::backdrop { background: rgba(5, 4, 12, 0.92); }
 .login form { display: grid; gap: 14px; }
 .login .btn { min-height: 46px; margin-top: 4px; }
 
-/* ---------- węższe ekrany ---------- */
+/* ---------- narrower screens ---------- */
 
 @media (max-width: 920px) {
   .topbar-in { flex-wrap: wrap; gap: 10px; padding: 12px 16px; }
@@ -443,7 +443,7 @@ dialog.lightbox::backdrop { background: rgba(5, 4, 12, 0.92); }
 
 
 /* =====================================================================
-   v3: pełna szerokość, nawigacja, akcenty, animacje, nowe komponenty
+   v3: full width, navigation, accents, animations, new components
    ===================================================================== */
 
 [data-accent="mint"]   { --signal: #6EE0B8; --signal-d: #98EBC9; --on-signal: #062A1E; }
@@ -454,7 +454,7 @@ dialog.lightbox::backdrop { background: rgba(5, 4, 12, 0.92); }
 .ico { width: 18px; height: 18px; flex: none; }
 .ico-slot { display: inline-block; width: 18px; height: 18px; }
 
-/* układ: góra albo bok */
+/* layout: top or side */
 .shell { display: block; min-height: calc(100dvh - var(--topbar-h)); }
 .view { min-width: 0; outline: none; }
 .mainnav { gap: 4px; }
@@ -492,7 +492,7 @@ html[data-nav="side"] .sidenav .badge { margin-left: auto; }
 }
 .palette-btn { gap: 8px; }
 
-/* przejście między widokami */
+/* view transition */
 .view-enter { animation: view-in .42s var(--ease) both; }
 @keyframes view-in { from { opacity: 0; transform: translateY(14px); } }
 [data-motion="low"] .view-enter { animation-duration: .18s; }
@@ -516,7 +516,7 @@ html[data-nav="side"] .sidenav .badge { margin-left: auto; }
 .menu-it kbd { margin-left: auto; }
 dialog .menu { position: fixed; }
 
-/* kontrolki: segment, przełącznik, próbki */
+/* controls: segment, switch, swatches */
 .seg { display: inline-flex; padding: 3px; gap: 2px; border: 1px solid var(--line); border-radius: 11px; background: var(--field); flex-wrap: wrap; }
 .seg button {
   min-height: 34px; padding: 0 14px; border: 0; border-radius: 8px; background: transparent;
@@ -617,7 +617,7 @@ dialog .menu { position: fixed; }
 .cmd-row input:focus { outline: 2px solid var(--signal); outline-offset: 0; border-color: var(--signal); }
 .add-row { justify-self: start; }
 
-/* paleta poleceń */
+/* command palette */
 dialog.palette {
   width: min(680px, calc(100% - 24px)); max-width: none; margin: 12vh auto auto; padding: 0;
   border: 1px solid var(--line); border-radius: 18px; background: var(--paper); overflow: hidden;
@@ -645,7 +645,7 @@ dialog.palette::backdrop { background: rgba(5,4,12,.72); backdrop-filter: blur(3
 .pal-foot { display: flex; gap: 18px; padding: 10px 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12.5px; }
 .pal-foot kbd { margin-right: 4px; }
 
-/* upuszczanie zdjęć, konfetti */
+/* image drop, confetti */
 .drop-ov {
   position: fixed; inset: 0; z-index: 900; display: grid; place-items: center; pointer-events: none;
   background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(6px); opacity: 0; transition: opacity .18s;
@@ -675,7 +675,7 @@ dialog.palette::backdrop { background: rgba(5,4,12,.72); backdrop-filter: blur(3
 @keyframes grow { from { transform: scaleX(0); } }
 .size-val { text-align: right; font: 500 13px var(--font-mono); color: var(--ink-2); }
 
-/* szkielet ładowania */
+/* loading skeleton */
 .skel { display: grid; gap: 8px; padding: 8px; }
 .skel i { display: block; height: 34px; border-radius: 8px; background: linear-gradient(90deg, var(--raised) 25%, var(--select) 50%, var(--raised) 75%); background-size: 200% 100%; animation: shimmer 1.2s linear infinite; animation-delay: calc(var(--i) * 80ms); }
 @keyframes shimmer { to { background-position: -200% 0; } }
@@ -715,7 +715,7 @@ dialog.palette::backdrop { background: rgba(5,4,12,.72); backdrop-filter: blur(3
 .code pre code { padding: 0; border: 0; background: none; }
 .tok-c { color: #7A74A6; font-style: italic; } .tok-s { color: #6EE0B8; } .tok-k { color: #C79BFF; } .tok-n { color: #FFB65C; }
 
-/* nowy układ na węższych ekranach */
+/* new layout on narrower screens */
 @media (max-width: 920px) {
   html[data-nav="side"] .shell { grid-template-columns: 1fr; }
   html[data-nav="side"] .sidenav { position: static; height: auto; flex-direction: row; overflow-x: auto; padding: 8px 12px; border-right: 0; border-bottom: 1px solid var(--line); }
@@ -736,7 +736,7 @@ dialog.palette::backdrop { background: rgba(5,4,12,.72); backdrop-filter: blur(3
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 
-/* górny pasek: mniej ścisku */
+/* top bar: less cramped */
 .topbar-in { flex-wrap: nowrap; gap: 14px; }
 .brand { flex: none; }
 .search { flex: 1 1 200px; min-width: 150px; margin: 0 auto; }

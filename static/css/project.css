@@ -1,4 +1,4 @@
-/* project.css: pełnoekranowa strona projektu (jak strona gry w Steamie). */
+/* project.css: full-screen project page (like a game page in Steam). */
 
 .proj { padding-bottom: 80px; }
 
@@ -60,7 +60,7 @@
 .split > .btn:only-child { border-radius: 12px; }
 .star-btn.pop { animation: star-pop .55s var(--ease); }
 
-/* ---------- treść ---------- */
+/* ---------- content ---------- */
 .proj-body {
   display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 36px; align-items: start;
   padding: 10px var(--pad) 0; margin-top: -10px;
@@ -113,7 +113,7 @@ html[data-nav="side"] .proj-side { top: calc(var(--topbar-h) + 20px); }
 .st-pick button:hover { border-color: var(--st); color: var(--ink); transform: translateY(-1px); }
 .st-pick button[aria-checked="true"] { border-color: var(--st); background: color-mix(in srgb, var(--st) 18%, transparent); color: var(--ink); font-weight: 600; }
 
-/* ---------- przegląd i galeria ---------- */
+/* ---------- overview and gallery ---------- */
 .ov { display: grid; gap: 26px; }
 .gal { display: grid; gap: 12px; }
 .gal.busy { opacity: .6; pointer-events: none; }
@@ -190,7 +190,7 @@ html[data-nav="side"] .proj-side { top: calc(var(--topbar-h) + 20px); }
 .mini-tasks i { width: 9px; height: 9px; border-radius: 50%; border: 2px solid var(--muted); flex: none; }
 .mini-tasks .doing i { border-color: var(--c6); background: var(--c6); }
 
-/* ---------- zadania w projekcie ---------- */
+/* ---------- project tasks ---------- */
 .tk { display: grid; gap: 18px; max-width: 820px; }
 .tk-top { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
 .tk-top h2 { font-size: 26px; }
@@ -267,7 +267,7 @@ html[data-nav="side"] .proj-side { top: calc(var(--topbar-h) + 20px); }
 .pg:hover { border-color: var(--signal); transform: translateY(-2px); }
 .pg.next { text-align: right; }
 
-/* ---------- przeglądarka plików ---------- */
+/* ---------- file browser ---------- */
 .fb { display: grid; gap: 14px; }
 .fb-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
 .crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; }

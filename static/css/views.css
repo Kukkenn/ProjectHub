@@ -1,6 +1,6 @@
-/* views.css: tablica zadań, archiwum i ustawienia. */
+/* views.css: task board, archive and settings. */
 
-/* ---------- tablica zadań ---------- */
+/* ---------- task board ---------- */
 .tasks .tk-add.wide { max-width: none; margin-top: 4px; }
 .tk-add.wide select { flex: 0 1 240px; }
 .wide-prog { width: 220px; margin: 0; }
@@ -29,7 +29,7 @@
 .kc-btns { display: inline-flex; gap: 0; }
 .kc-btns .icon-btn { width: 30px; height: 30px; }
 
-/* ---------- ustawienia ---------- */
+/* ---------- settings ---------- */
 .settings { max-width: none; }
 .s-jump { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
 .s-jump a { padding: 6px 14px; border: 1px solid var(--line); border-radius: 999px; color: var(--ink-2); text-decoration: none; font-size: 14px; transition: border-color .15s, color .15s, transform .2s var(--ease); }

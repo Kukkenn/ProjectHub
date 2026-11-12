@@ -94,6 +94,14 @@ pip install -r backend/requirements.txt
 python -m uvicorn backend.main:app --host 127.0.0.1 --port 8765
 ```
 
+### Option 3: Docker (self-hosted server)
+
+```bash
+docker compose up -d
+# then open http://localhost:8765
+# own domain + HTTPS: docker compose --profile https up -d  (fill in the Caddyfile)
+```
+
 ---
 
 ## <img src="https://cdn.simpleicons.org/stackblitz/FFB65C" width="20" align="center"> &nbsp;Project Structure

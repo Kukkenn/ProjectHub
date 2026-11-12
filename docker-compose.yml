@@ -12,7 +12,7 @@ services:
       # PROJECTHUB_TRUST_PROXY: "1"        # enable together with the https profile
       # PROJECTHUB_HTTPS: "1"
     ports:
-      - "127.0.0.1:8765:8765"   # lokalnie; na serwerze: "8765:8765" razem z profilem https i ALLOWED_HOSTS
+      - "127.0.0.1:8765:8765"   # local only; on a server: "8765:8765" together with the https profile and ALLOWED_HOSTS
     volumes:
       - projecthub-data:/data
 

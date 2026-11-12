@@ -178,7 +178,7 @@
 
     return [
       P({
-        id: 'demo-projecthub', name: 'ProjectHub (demo project)', path: 'D:\\Projekty\\projecthub', category: 'Tools',
+        id: 'demo-projecthub', name: 'ProjectHub (demo project)', path: 'D:\\Projects\\projecthub', category: 'Tools',
         description: 'This entry shows what a fully described project looks like: gallery, commands, tasks, notes, documentation and a file browser.',
         notes: demoNotes, tech: ['Python', 'FastAPI', 'SQLite'], tags: ['demo', 'tool'],
         favorite: true, status: 'active', sizeBytes: 38 * MB, updatedAt: isoAgo(0), backedUpAt: isoAgo(0),
@@ -198,7 +198,7 @@
         docs: [D('Bot commands', botDoc)], images: [img('Command panel', 210)]
       }),
       P({
-        name: 'Portfolio', path: 'D:\\Projekty\\portfolio', category: 'Websites',
+        name: 'Portfolio', path: 'D:\\Projects\\portfolio', category: 'Websites',
         description: 'A page with my work and a contact form.',
         tech: ['HTML', 'CSS', 'JavaScript'], tags: ['personal'], favorite: true, status: 'idea',
         sizeBytes: Math.round(1.8 * GB), updatedAt: isoAgo(45), backedUpAt: isoAgo(40),
@@ -228,7 +228,7 @@
         images: [img('Board', 120)]
       }),
       P({
-        name: 'Home budget', path: 'D:\\Projekty\\budzet_domowy', category: 'Data',
+        name: 'Home budget', path: 'D:\\Projects\\home_budget', category: 'Data',
         description: 'A notebook that loads bank statements and plots spending month by month.',
         tech: ['Python', 'pandas', 'Jupyter'], tags: ['finance'], status: 'active',
         sizeBytes: 96 * MB, updatedAt: isoAgo(4), backedUpAt: isoAgo(1),

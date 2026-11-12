@@ -66,7 +66,14 @@
   function keysFor(dict) {
     return Object.keys(dict).sort(function (a, b) { return b.length - a.length; });
   }
-  function subKeysFor(keys) { return keys.filter(function (k) { return k.length >= SUB_MIN; }); }
+  // Whole-node matches always win. Substring replacement is restricted to
+  // fragment keys (starting/ending with a space) or long keys, so short
+  // labels like "files" or "Done" never mangle user-written text.
+  function subKeysFor(keys) {
+    return keys.filter(function (k) {
+      return (/^\s|\s$/).test(k) || k.length >= 12;
+    });
+  }
 
   function apply(lang) {
     current = lang === 'pl' ? 'pl' : 'en';
@@ -101,16 +108,18 @@
     document.documentElement.dataset.lang = current;
   }
 
+  function langNow() {
+    if (window.PH && PH.settings && PH.settings.language) return PH.settings.language;
+    try { var s = JSON.parse(localStorage.getItem('ph_settings') || '{}'); return s.language || 'en'; } catch (e) { return 'en'; }
+  }
   // React to settings changes: switching the language re-translates the whole page.
   document.addEventListener('ph:settings', function (e) {
-    if (!window.PH || !PH.settings) return;
+    var want = langNow();
     if (e.detail && (e.detail.key === 'language' || e.detail.key === '*')) {
-      if (PH_I18N.get() !== (PH.settings.language || 'en')) apply(PH.settings.language);
+      if (PH_I18N.get() !== want) apply(want);
     }
   });
-  document.addEventListener('DOMContentLoaded', function () {
-    if (window.PH && PH.settings && PH.settings.language === 'pl') apply('pl');
-  });
+  document.addEventListener('DOMContentLoaded', function () { apply(langNow()); });
 
   window.PH_I18N = {
     apply: function (lang) {

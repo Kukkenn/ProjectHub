@@ -1,5 +1,5 @@
-/* Motywy całej strony. Wybrany motyw ustawia theme-boot.js / applySettings jako <html data-theme="…">.
-   Ciemny „night” to domyślne wartości z :root w style.css. */
+/* Site-wide themes. The chosen theme is set by theme-boot.js / applySettings as <html data-theme="…">.
+   The dark „night” theme is the :root default from style.css. */
 
 :root { --shadow: #000; }
 
@@ -33,11 +33,11 @@ html[data-theme="paper"] {
   --ok: #2F7D4F; --old: #8A6D00; --danger: #B5382F; --shadow: #5A4B2A;
   --signal: #B5541B; --signal-d: #96440F; --on-signal: #FFFFFF; --accent2: #3F6F8F;
 }
-/* własny kolor akcentu ustawia applySettings przez --signal; w jasnych motywach przyciski mają ciemniejszy kolor */
+/* the custom accent color is applied by applySettings via --signal; in light themes buttons get a darker shade */
 html[data-theme="light"] .banner, html[data-theme="paper"] .banner { color: var(--ink); }
 html[data-theme="light"] .tab-pill, html[data-theme="paper"] .tab-pill { color: var(--on-tab); }
 
-/* ---------- formularz projektu: źródło plików, upload, ikona, kolor ---------- */
+/* ---------- project form: file source, upload, icon, color ---------- */
 
 .dz {
   display: grid; gap: 10px; justify-items: center; text-align: center; padding: 18px 14px;
@@ -69,7 +69,7 @@ html[data-theme="light"] .tab-pill, html[data-theme="paper"] .tab-pill { color: 
 .switch-mode { margin-top: 16px; text-align: center; color: var(--ink-2); font-size: 14px; }
 .linklike { border: 0; background: none; padding: 0; color: var(--signal); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
 
-/* ---------- podgląd na żywo ---------- */
+/* ---------- live preview ---------- */
 
 .pv { display: grid; gap: 10px; }
 .pv-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
@@ -83,7 +83,7 @@ html[data-theme="light"] .tab-pill, html[data-theme="paper"] .tab-pill { color: 
 .pv-stage.narrow iframe { box-shadow: 0 0 0 1px var(--line); }
 .pv-note { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; padding: 24px; color: var(--ink-2); z-index: 1; background: var(--field); }
 
-/* ---------- pliki: narzędzia, edytor ---------- */
+/* ---------- files: tools, editor ---------- */
 
 .fb-tools { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
 .fp-edit {
@@ -92,7 +92,7 @@ html[data-theme="light"] .tab-pill, html[data-theme="paper"] .tab-pill { color: 
 }
 .pathrow.managed { display: flex; justify-content: space-between; gap: 10px; align-items: center; color: var(--ink-2); font-size: 13px; }
 
-/* ---------- konto i motywy w ustawieniach ---------- */
+/* ---------- konto i motywy w settingsch ---------- */
 
 .theme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 10px; }
 .theme-card {
